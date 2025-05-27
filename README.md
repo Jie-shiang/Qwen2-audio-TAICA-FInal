@@ -439,7 +439,7 @@ intonation_focus = [
 - **學年**: 113學年度
 
 ### 📧 聯絡方式
-- **學校信箱**: [s113061529@m113.nthu.edu.tw](mailto:snoopy963852@gapp.nthu.edu.tw)
+- **學校信箱**: [snoopy963852@gapp.nthu.edu.tw](mailto:snoopy963852@gapp.nthu.edu.tw)
 
 ---
 
