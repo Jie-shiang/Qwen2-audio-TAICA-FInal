@@ -1,0 +1,707 @@
+/* 
+styles.css - 語言學習助教界面樣式
+*/
+
+/* 全局背景和字體 */
+.gradio-container {
+    background-image: url('/file=/home/jieshiang/Desktop/Qwen2-audio/scenario_images/background.png') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-attachment: fixed !important;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif !important;
+    min-height: 100vh !important;
+}
+
+/* 半透明遮罩 */
+.gradio-container::before {
+    content: "" !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+    z-index: -1 !important;
+}
+
+/* 主容器樣式 */
+.main-container {
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(15px) !important;
+    border: 2px solid rgba(102, 126, 234, 0.15) !important;
+    border-radius: 20px !important;
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8),
+        0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
+    margin: 20px auto !important;
+    max-width: 1200px !important;
+    padding: 40px !important;
+    position: relative !important;
+}
+
+/* 標題區域 */
+.header-section {
+    text-align: center !important;
+    margin-bottom: 40px !important;
+    padding: 30px 0 !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border-radius: 16px !important;
+    color: white !important;
+    box-shadow: 
+        0 10px 30px rgba(102, 126, 234, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.header-title {
+    font-size: 2.5rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 10px !important;
+    background: linear-gradient(45deg, #fff, #f0f0f0) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+}
+
+/* 副標題統 */
+.header-subtitle {
+    font-size: 1.1rem !important;
+    opacity: 0.9 !important;
+    font-weight: 400 !important;
+    background: linear-gradient(45deg, #fff, #f0f0f0) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    margin-bottom: 8px !important;
+}
+
+/* 系統狀態 */
+.status-card {
+    background: rgba(232, 245, 232, 0.95) !important;
+    border: 2px solid rgba(76, 175, 80, 0.25) !important;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    margin: 20px 0 !important;
+    box-shadow: 
+        0 4px 15px rgba(76, 175, 80, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(10px) !important;
+    border-left: 4px solid #4CAF50 !important;
+}
+
+/* 主要設定區域 */
+.initial-settings {
+    background: rgba(255, 255, 255, 0.98) !important;
+    border: 2px solid rgba(102, 126, 234, 0.15) !important;
+    border-radius: 16px !important;
+    padding: 30px !important;
+    margin: 20px auto !important;
+    max-width: 800px !important;
+    box-shadow: 
+        0 8px 25px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+/* 下拉選單樣式 */
+.gradio-dropdown {
+    border: 2px solid rgba(102, 126, 234, 0.25) !important;
+    border-radius: 10px !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(8px) !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+    min-height: 45px !important;
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+/* 下拉選單聚焦狀態 */
+.gradio-dropdown:focus,
+.gradio-dropdown:focus-within,
+.gradio-dropdown.focused {
+    border-color: #667eea !important;
+    box-shadow: 
+        0 0 0 3px rgba(102, 126, 234, 0.15),
+        0 4px 12px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+    background: rgba(255, 255, 255, 1) !important;
+    outline: none !important;
+}
+
+/* 下拉選單內部元素 */
+.gradio-dropdown select {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    width: 100% !important;
+    padding: 12px 16px !important;
+    font-size: 1rem !important;
+    color: #374151 !important;
+    cursor: pointer !important;
+}
+
+/* 下拉箭頭 */
+.gradio-dropdown::after {
+    content: "▼" !important;
+    position: absolute !important;
+    right: 12px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    pointer-events: none !important;
+    color: #667eea !important;
+    font-size: 0.8rem !important;
+}
+
+/* 下拉選項容器 */
+.gradio-dropdown .dropdown-content,
+.gradio-dropdown .dropdown-menu {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    border: 2px solid rgba(102, 126, 234, 0.25) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+    backdrop-filter: blur(10px) !important;
+    z-index: 1000 !important;
+    max-height: 200px !important;
+    overflow-y: auto !important;
+    margin-top: 4px !important;
+}
+
+/* 下拉選項樣式 */
+.gradio-dropdown .dropdown-item,
+.gradio-dropdown option {
+    padding: 12px 16px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+    color: #374151 !important;
+    background: transparent !important;
+}
+
+.gradio-dropdown .dropdown-item:hover,
+.gradio-dropdown option:hover {
+    background: rgba(102, 126, 234, 0.1) !important;
+    color: #667eea !important;
+}
+
+.gradio-dropdown .dropdown-item.selected,
+.gradio-dropdown option:checked {
+    background: rgba(102, 126, 234, 0.15) !important;
+    color: #667eea !important;
+    font-weight: 600 !important;
+}
+
+/* 模式選擇按鈕 */
+.mode-btn {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%) !important;
+    color: white !important;
+    border: 2px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 12px !important;
+    width: 250px !important;
+    height: 80px !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    margin: 15px !important;
+    box-shadow: 
+        0 6px 20px rgba(76, 175, 80, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.mode-btn:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 
+        0 12px 30px rgba(76, 175, 80, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+    background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* 場景卡片 */
+.scenario-card {
+    background: rgba(255, 255, 255, 0.98) !important;
+    border: 2px solid rgba(102, 126, 234, 0.2) !important;
+    border-radius: 16px !important;
+    padding: 20px !important;
+    margin: 15px !important;
+    box-shadow: 
+        0 8px 25px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+.scenario-card:hover {
+    transform: translateY(-8px) !important;
+    border-color: rgba(102, 126, 234, 0.4) !important;
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+.scenario-card::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 4px !important;
+    background: linear-gradient(90deg, #667eea, #764ba2) !important;
+}
+
+/* 場景圖片 */
+.scenario-image {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    width: 100% !important;
+    height: 200px !important;
+    margin: 15px 0 !important;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+.scenario-image img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    border-radius: 12px !important;
+    transition: transform 0.3s ease !important;
+}
+
+.scenario-image:hover img {
+    transform: scale(1.05) !important;
+}
+
+/* 圖片容器 */
+.scenario-card .gradio-image {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    background: none !important;
+    border: none !important;
+    margin: 15px 0 !important;
+}
+
+.scenario-card .gradio-image > div {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    background: none !important;
+    height: 200px !important;
+}
+
+.scenario-card .gradio-image img {
+    width: 100% !important;
+    height: 200px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    border-radius: 12px !important;
+    transition: transform 0.3s ease !important;
+}
+
+.scenario-card .gradio-image:hover img {
+    transform: scale(1.05) !important;
+}
+
+/* 場景選擇按鈕 */
+.scenario-btn {
+    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%) !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 8px !important;
+    padding: 12px 24px !important;
+    font-weight: 600 !important;
+    margin-top: 15px !important;
+    width: 100% !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 
+        0 4px 12px rgba(33, 150, 243, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.scenario-btn:hover {
+    background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 
+        0 6px 18px rgba(33, 150, 243, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* 對話區域 */
+.conversation-area {
+    background: rgba(255, 255, 255, 0.98) !important;
+    border: 2px solid rgba(102, 126, 234, 0.15) !important;
+    border-radius: 16px !important;
+    padding: 25px !important;
+    margin: 20px 0 !important;
+    box-shadow: 
+        0 8px 25px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+.dialog-box {
+    background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%) !important;
+    border: 2px solid rgba(103, 126, 234, 0.2) !important;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    box-shadow: inset 0 1px 3px rgba(103, 126, 234, 0.1) !important;
+}
+
+/* 用戶輸入區域 */
+.user-input {
+    background: rgba(248, 249, 250, 0.95) !important;
+    border: 2px solid rgba(0, 0, 0, 0.08) !important;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    margin-top: 15px !important;
+    backdrop-filter: blur(8px) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+}
+
+/* 輸入組件樣式 */
+.gradio-textbox {
+    border: 2px solid rgba(102, 126, 234, 0.25) !important;
+    border-radius: 10px !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(8px) !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+}
+
+.gradio-textbox:focus {
+    border-color: #667eea !important;
+    box-shadow: 
+        0 0 0 3px rgba(102, 126, 234, 0.15),
+        0 4px 12px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+    background: rgba(255, 255, 255, 1) !important;
+}
+
+/* 音頻組件 */
+.gradio-audio {
+    border: 2px solid rgba(102, 126, 234, 0.2) !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(8px) !important;
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+}
+
+/* 主要按鈕樣式 */
+.primary-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    border: 2px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 10px !important;
+    padding: 12px 30px !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 
+        0 4px 15px rgba(102, 126, 234, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+.primary-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 
+        0 8px 25px rgba(102, 126, 234, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* 次要按鈕樣式 */
+.secondary-btn {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+    color: #374151 !important;
+    border: 2px solid rgba(0, 0, 0, 0.1) !important;
+    border-radius: 10px !important;
+    padding: 12px 24px !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+}
+
+.secondary-btn:hover {
+    background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%) !important;
+    transform: translateY(-1px) !important;
+    border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+/* 返回按鈕 */
+.back-btn {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%) !important;
+    color: white !important;
+    border: 2px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 10px !important;
+    padding: 12px 24px !important;
+    font-weight: 600 !important;
+    margin: 20px 0 !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 
+        0 4px 12px rgba(107, 114, 128, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.back-btn:hover {
+    background: linear-gradient(135deg, #4b5563 0%, #374151 100%) !important;
+    transform: translateY(-2px) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* 進階功能區域 */
+.advanced-section {
+    background: rgba(255, 255, 255, 0.98) !important;
+    border: 2px solid rgba(102, 126, 234, 0.1) !important;
+    border-radius: 12px !important;
+    margin: 15px 0 !important;
+    backdrop-filter: blur(10px) !important;
+    box-shadow: 
+        0 4px 15px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+}
+
+.feedback-panel {
+    background: linear-gradient(135deg, #fef7f0 0%, #fff2e6 100%) !important;
+    border: 2px solid rgba(251, 146, 60, 0.2) !important;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    backdrop-filter: blur(8px) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+}
+
+/* 統計面板 */
+.stats-panel {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+    border: 2px solid rgba(14, 165, 233, 0.2) !important;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    box-shadow: 
+        0 4px 15px rgba(14, 165, 233, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(8px) !important;
+}
+
+/* 記憶體監控 */
+.memory-info {
+    background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%) !important;
+    border: 2px solid rgba(59, 130, 246, 0.25) !important;
+    border-radius: 10px !important;
+    padding: 15px !important;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+    font-size: 0.9rem !important;
+    line-height: 1.6 !important;
+    backdrop-filter: blur(8px) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+}
+
+/* 分數顯示 */
+.score-display {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
+    border: 2px solid rgba(34, 197, 94, 0.25) !important;
+    border-radius: 10px !important;
+    padding: 15px !important;
+    text-align: center !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+    backdrop-filter: blur(8px) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .main-container {
+        margin: 10px !important;
+        padding: 20px !important;
+        border-width: 1px !important;
+    }
+    
+    .mode-btn {
+        width: 100% !important;
+        margin: 10px 0 !important;
+    }
+    
+    .scenario-card {
+        margin: 10px 0 !important;
+        border-width: 1px !important;
+    }
+    
+    .gradio-textbox, .gradio-dropdown, .gradio-audio {
+        border-width: 1px !important;
+    }
+}
+
+/* 滾動條樣式 */
+::-webkit-scrollbar {
+    width: 8px !important;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05) !important;
+    border-radius: 4px !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+    border-radius: 4px !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #764ba2, #667eea) !important;
+}
+
+/* 動畫效果 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out !important;
+}
+
+/* Accordion */
+.gradio-accordion {
+    border: 2px solid rgba(102, 126, 234, 0.15) !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(10px) !important;
+    box-shadow: 
+        0 4px 15px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Gallery */
+.gradio-gallery {
+    border: 2px solid rgba(102, 126, 234, 0.15) !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(8px) !important;
+}
+
+/* Dataframe */
+.gradio-dataframe {
+    border: 2px solid rgba(102, 126, 234, 0.15) !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(8px) !important;
+}
+
+/* JSON */
+.gradio-json {
+    border: 2px solid rgba(14, 165, 233, 0.2) !important;
+    border-radius: 10px !important;
+    background: rgba(240, 249, 255, 0.95) !important;
+    backdrop-filter: blur(8px) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Number */
+.gradio-number {
+    border: 2px solid rgba(34, 197, 94, 0.25) !important;
+    border-radius: 8px !important;
+    background: rgba(236, 253, 245, 0.95) !important;
+    text-align: center !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+    backdrop-filter: blur(8px) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+}
+
+.gradio-checkboxgroup, .gradio-radio {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 2px solid rgba(102, 126, 234, 0.15) !important;
+    border-radius: 10px !important;
+    padding: 15px !important;
+    backdrop-filter: blur(8px) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+}
+
+.gradio-dropdown .wrap {
+    position: relative !important;
+}
+
+.gradio-dropdown .wrap select,
+.gradio-dropdown .wrap input {
+    width: 100% !important;
+    padding: 12px 16px !important;
+    border: none !important;
+    background: transparent !important;
+    font-size: 1rem !important;
+    color: #374151 !important;
+    outline: none !important;
+    cursor: pointer !important;
+}
+
+@-moz-document url-prefix() {
+    .gradio-dropdown select {
+        background-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23667eea'><path d='M7 10l5 5 5-5z'/></svg>") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 12px center !important;
+        background-size: 16px !important;
+    }
+}
+
+.gradio-dropdown:hover {
+    border-color: rgba(102, 126, 234, 0.4) !important;
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+}
+
+.gradio-dropdown[data-testid="dropdown"] {
+    pointer-events: all !important;
+    user-select: none !important;
+}
+
+.gradio-dropdown[data-testid="dropdown"]:not([disabled]) {
+    cursor: pointer !important;
+}
+
+.gradio-dropdown label,
+.gradio-textbox label {
+    font-weight: 600 !important;
+    color: #374151 !important;
+    margin-bottom: 8px !important;
+    display: block !important;
+}
+
+@media (max-width: 768px) {
+    .gradio-dropdown {
+        min-height: 50px !important;
+        font-size: 1.1rem !important;
+    }
+    
+    .gradio-dropdown select,
+    .gradio-dropdown input {
+        padding: 15px 16px !important;
+        font-size: 1.1rem !important;
+    }
+}
