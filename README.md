@@ -26,15 +26,15 @@
 ### 🧠 多模態AI架構
 - **Whisper語音識別**: OpenAI頂級語音轉文字模型
 - **Qwen2-Audio分析**: 阿里巴巴多模態語言模型，直接音頻理解
-- **智能降級機制**: GPU記憶體不足時自動切換到CPU簡化模式
+- **降級機制**: GPU記憶體不足時自動切換到CPU簡化模式
 
 ### 🎯 個性化學習體驗
 - **5級難度系統**: 從初學者(TOEIC 250)到高級(TOEIC 905+)
 - **6大場景模擬**: 機場、餐廳、面試、社交、醫療、學術
 - **即時發音評分**: 綜合發音準確度與流暢度評估
-- **智能回饋調整**: 基於學習者水平的個性化建議
+- **即時回饋調整**: 基於學習者水平的個性化建議
 
-### ⚡ 智能資源管理
+### ⚡ 資源管理
 - **動態記憶體監控**: 實時GPU/CPU使用量追蹤
 - **自適應模型載入**: 根據硬體配置自動優化
 - **緊急清理機制**: 防止記憶體溢出的保護措施
@@ -126,7 +126,7 @@ graph TB
     L[場景管理器] --> H
 ```
 
-### 🔄 智能降級機制
+### 🔄 降級機制
 
 ```python
 # 自動模型選擇流程
@@ -142,20 +142,33 @@ else:
 
 ```
 Qwen2-audio-TAICA-Final/
-├── 📄 app.py                 # 主應用程式與Gradio界面
-├── 🧠 models.py              # AI模型管理與GPU優化
-├── ⚙️ processors.py          # 音頻處理與語言分析核心
-├── 📊 memory_monitor.py      # 智能記憶體監控系統
-├── 🎨 styles.css             # 現代化UI樣式設計
-├── 📋 requirements.txt       # Python依賴套件清單
-├── 📚 README.md              # 專案說明文檔
-└── 📁 scenario_images/       # 場景配圖資源
-    ├── airport.jpg           # 機場場景圖
-    ├── restaurant.jpg        # 餐廳場景圖
-    ├── interview.jpg         # 面試場景圖
-    ├── socializing.jpg       # 社交場景圖
-    ├── medical.jpg           # 醫療場景圖
-    └── academic.jpg          # 學術場景圖
+├── 📄 app.py                         # 主應用程式與Gradio界面
+├── 🧠 models.py                      # AI模型管理與GPU優化
+├── ⚙️ processors.py                  # 音頻處理與語言分析核心
+├── 📊 memory_monitor.py              # 智能記憶體監控系統
+├── 🎨 styles.css                     # 現代化UI樣式設計
+├── 📋 requirements.txt               # Python依賴套件清單
+├── 📚 README.md                      # 專案說明文檔
+├── 📝 final_project_report.md        # 期末專題報告
+├── 📁 Demo/                          # 系統展示資料
+│   └── 113061529.mp4                # 系統操作展示影片
+├── 📁 figure/                        # 報告用圖片資源
+│   ├── advanced_settings.png        # 進階設定界面
+│   ├── conversation_practice.png    # 對話練習界面
+│   ├── free_dialog.png              # 自由對話界面
+│   ├── main_interface.png           # 系統主界面
+│   ├── pronunciation_analysis.png   # 發音分析結果
+│   ├── scenario_selection.png       # 場景選擇界面
+│   ├── Structure.png                # 系統架構圖
+│   └── system_monitoring.png        # 系統監控界面
+└── 📁 scenario_images/               # 場景配圖資源
+├── academic.jpg                  # 學術場景圖
+├── airport.jpg                   # 機場場景圖
+├── background.jpg                # 背景圖片
+├── interview.jpg                 # 面試場景圖
+├── medical.jpg                   # 醫療場景圖
+├── restaurant.jpg                # 餐廳場景圖
+└── socializing.jpg               # 社交場景圖
 ```
 
 ### 📂 核心模組職責
@@ -262,7 +275,7 @@ class ModelManager:
     - GPU/CPU自動檢測與配置
     - Whisper語音識別模型載入
     - Qwen2-Audio多模態模型管理
-    - 智能記憶體優化與監控
+    - 記憶體優化與監控
     """
 ```
 
@@ -270,7 +283,7 @@ class ModelManager:
 - **自適應硬體檢測**: 自動識別最佳GPU配置
 - **記憶體安全機制**: 防止OOM錯誤的多層保護
 - **模型熱切換**: 運行時動態調整模型精度
-- **資源清理**: 智能垃圾回收與記憶體釋放
+- **資源清理**: 垃圾回收與記憶體釋放
 
 ### ⚙️ processors.py - 語音處理與分析核心
 
@@ -302,7 +315,7 @@ class AudioProcessor:
    - 學習者進度追蹤
    - 個性化建議生成
 
-### 📊 memory_monitor.py - 智能資源監控
+### 📊 memory_monitor.py - 資源監控
 
 ```python
 class MemoryMonitor:
