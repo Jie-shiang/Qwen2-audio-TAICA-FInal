@@ -1,4 +1,4 @@
-# 🗣️ 智能語言學習助教系統
+# 🗣️ 口說語言學習互動助教系統
 
 **清華大學電機所 113061529 楊傑翔 Final Project**
 
@@ -19,6 +19,7 @@
 - [💻 系統需求](#-系統需求)
 - [🔧 模組詳解](#-模組詳解)
 - [📱 使用指南](#-使用指南)
+- [📞 聯絡資訊](#-聯絡資訊)
 
 ## ✨ 專案亮點
 
@@ -445,9 +446,9 @@ intonation_focus = [
 
 <div align="center">
 
-### 🎉 感謝使用智能語言學習助教系統！
+### 🎉 感謝你看到這邊
 
-**讓AI成為您語言學習路上的最佳夥伴** 🚀
+**我很佩服目前AI工具的能力** 🚀
 
 [![清華大學](https://img.shields.io/badge/清華大學-電機工程學系-purple.svg)](https://web.ee.nthu.edu.tw/)
 [![Python](https://img.shields.io/badge/Made%20with-Python-blue.svg)](https://python.org)
