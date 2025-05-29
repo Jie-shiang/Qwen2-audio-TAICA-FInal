@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-app.py - 語言學習助教（無TTS版本）
+app.py - 語言學習助教
 """
 
 import os
@@ -15,12 +15,10 @@ import struct
 from models import get_model_manager
 from processors import get_conversation_manager
 
-# 創建必要的目錄
 for dir_name in ["scenario_images", "temp_audio", "user_recordings", "generations"]:
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
 
-# 載入外部CSS文件
 def load_css_file(css_file_path):
     try:
         with open(css_file_path, 'r', encoding='utf-8') as f:
@@ -32,10 +30,8 @@ def load_css_file(css_file_path):
         print(f"⚠️  讀取CSS文件時出錯: {e}")
         return ""
 
-# 載入樣式
 css_content = load_css_file("styles.css")
 
-# 預設場景範例
 scenario_examples = [
     {
         "name": "機場對話",
@@ -81,7 +77,6 @@ scenario_examples = [
     }
 ]
 
-# 預設場景設定
 scenario_presets = {
     "機場對話 (Airport Conversation)": {
         "description": "在機場通關、護照檢查和登機的相關對話情境",
@@ -157,7 +152,6 @@ scenario_presets = {
     }
 }
 
-# 初始化模型和處理器
 print("正在初始化系統...")
 GPU_MEMORY_LIMIT = 20
 model_manager = get_model_manager(gpu_memory_limit=GPU_MEMORY_LIMIT)
@@ -189,25 +183,6 @@ def ensure_scenario_images():
             img = Image.new('RGB', (400, 300), color=colors[color_index])
             img.save(image_path)
             print(f"已創建佔位圖片: {image_path}")
-
-def generate_temp_audio(prefix):
-    os.makedirs("temp_audio", exist_ok=True)
-    temp_audio_path = os.path.join("temp_audio", f"{prefix}_{random.randint(1000, 9999)}.wav")
-
-    if not os.path.exists(temp_audio_path):
-        with wave.open(temp_audio_path, 'w') as f:
-            f.setnchannels(1)
-            f.setsampwidth(2)
-            f.setframerate(44100)
-            duration = 2
-            values = []
-            for i in range(duration * 44100):
-                freq = 440 + 100 * np.sin(i * 0.001)
-                amplitude = 0.1 * np.exp(-i / 22050)
-                values.append(int(32767.0 * amplitude * np.sin(i * 2 * np.pi * freq / 44100)))
-            f.writeframes(struct.pack('h' * len(values), *values))
-
-    return temp_audio_path
 
 def get_memory_status():
     try:
@@ -253,7 +228,6 @@ def get_system_stats():
     }
     return stats
 
-# 界面控制函數
 def update_language_difficulty(language, difficulty):
     global current_language, current_difficulty
     current_language = language
@@ -300,12 +274,12 @@ def select_scenario(example_index):
     current_scenario_name = preset_name
 
     return (
-        gr.update(visible=False),  # 隱藏場景選擇
-        gr.update(visible=True),   # 顯示對話區域
-        preset["roles"]["assistant"],  # 助教角色
-        preset["roles"]["user"],       # 用戶角色
-        preset["sample_dialog"]["assistant"],  # 助教開場白
-        f"🎭 當前場景：{selected['name']}"  # 場景標題
+        gr.update(visible=False),
+        gr.update(visible=True),
+        preset["roles"]["assistant"],
+        preset["roles"]["user"],
+        preset["sample_dialog"]["assistant"],
+        f"🎭 當前場景：{selected['name']}"
     )
 
 def start_free_conversation(scenario_text):
@@ -321,33 +295,47 @@ def start_free_conversation(scenario_text):
     )
 
 def process_user_audio(audio_path, language, difficulty, focus_area, feedback_detail,
-                      pronunciation_focus, accent_preference, track_progress):
+                      pronunciation_focus, accent_preference, track_progress, show_comparison):
+    """處理用戶音頻 - 完整整合進階功能"""
     if audio_path is None:
-        return "", "請先錄製您的回應", 0, 0, "", []
+        return "", "請先錄製您的回應", 0, 0, "", [], ""
 
     try:
         print(f"處理音頻文件: {audio_path}")
         print(f"使用語言設定: {language}")
         print(f"使用難度設定: {difficulty}")
+        print(f"發音重點: {pronunciation_focus}")
+        print(f"口音偏好: {accent_preference}")
+        print(f"回饋級別: {feedback_detail}")
         
         conversation_context = conversation_manager.get_conversation_context()
         
-        # 傳遞難度參數到處理函數
         result = conversation_manager.process_user_input(
-            audio_path, 
-            current_scenario_name, 
-            conversation_context,
-            difficulty  # 新增難度參數
+            audio_path=audio_path, 
+            scenario=current_scenario_name, 
+            conversation_context=conversation_context,
+            difficulty=difficulty,
+            pronunciation_focus=pronunciation_focus,
+            accent_preference=accent_preference,
+            feedback_detail=feedback_detail,
+            show_comparison=show_comparison,
+            track_progress=track_progress,
+            focus_area=focus_area
         )
         
         if not result["success"]:
-            return "", result["error_message"], 0, 0, "", []
+            return "", result["error_message"], 0, 0, "", [], ""
         
-        # 根據回饋詳細程度調整顯示內容
+        suggested_text = ""
+        if result.get("suggested_responses"):
+            suggested_text = "💡 建議回覆句子：\n"
+            for i, suggestion in enumerate(result["suggested_responses"][:3], 1):
+                suggested_text += f"{i}. {suggestion}\n"
+        
         if feedback_detail == "基本回饋":
             feedback = f"您說的是：'{result['recognized_text']}'\n發音得分：{result['pronunciation_score']}/100"
         elif feedback_detail == "詳細回饋":
-            feedback = f"您說的是：'{result['recognized_text']}'\n\n發音分析：\n{result['pronunciation_analysis'][:300]}..."
+            feedback = f"您說的是：'{result['recognized_text']}'\n\n發音分析：\n{result['pronunciation_analysis'][:400]}..."
         else:
             feedback = f"您說的是：'{result['recognized_text']}'\n\n詳細發音分析：\n{result['pronunciation_analysis']}"
 
@@ -359,14 +347,23 @@ def process_user_audio(audio_path, language, difficulty, focus_area, feedback_de
                 additional_tips.append("💡 練習母音的準確度")
             if "語調" in pronunciation_focus:
                 additional_tips.append("💡 注意語調的起伏變化")
+            if "連音" in pronunciation_focus:
+                additional_tips.append("💡 練習自然的連音技巧")
+            if "重音" in pronunciation_focus:
+                additional_tips.append("💡 掌握重音模式")
+            if "節奏" in pronunciation_focus:
+                additional_tips.append("💡 控制說話節奏")
             
             if additional_tips:
-                feedback += "\n\n重點提醒：\n" + "\n".join(additional_tips)
+                feedback += "\n\n🎯 重點提醒：\n" + "\n".join(additional_tips)
+
+        if accent_preference != "不指定":
+            feedback += f"\n\n🌍 口音提醒：建議關注{accent_preference}的發音特點"
 
         history_entry = {
             "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "scenario": current_scenario_name,
-            "difficulty": difficulty,  # 記錄難度
+            "difficulty": difficulty,
             "score": result["pronunciation_score"],
             "feedback": feedback[:50] + "..." if len(feedback) > 50 else feedback
         }
@@ -379,34 +376,48 @@ def process_user_audio(audio_path, language, difficulty, focus_area, feedback_de
             result["pronunciation_score"], 
             result["fluency_score"],
             result["response_text"], 
-            history
+            history,
+            suggested_text
         )
         
     except Exception as e:
         print(f"處理用戶音頻時出錯: {e}")
-        return "", f"處理過程出現錯誤: {str(e)}", 0, 0, "", []
+        return "", f"處理過程出現錯誤: {str(e)}", 0, 0, "", [], ""
 
-def process_free_user_audio(audio_path, language, difficulty, scenario_text):
+def process_free_user_audio(audio_path, language, difficulty, scenario_text, pronunciation_focus, 
+                           accent_preference, feedback_detail, show_comparison):
+    """處理自由對話音頻 - 完整整合進階功能"""
     if audio_path is None:
-        return "", "請先錄製您的回應"
+        return "", "", ""
 
     try:
-        # 傳遞難度參數到自由對話處理
+        print(f"自由對話處理 - 難度: {difficulty}, 發音重點: {pronunciation_focus}")
+        
         result = conversation_manager.process_user_input(
-            audio_path, 
-            "自由對話",
-            f"Context: {scenario_text}",
-            difficulty  # 新增難度參數
+            audio_path=audio_path, 
+            scenario="自由對話",
+            conversation_context=f"Context: {scenario_text}",
+            difficulty=difficulty,
+            pronunciation_focus=pronunciation_focus,
+            accent_preference=accent_preference,
+            feedback_detail=feedback_detail,
+            show_comparison=show_comparison
         )
         
         if not result["success"]:
-            return "", result["error_message"]
+            return "", result["error_message"], ""
 
-        return result["recognized_text"], result["response_text"]
+        suggested_text = ""
+        if result.get("suggested_responses"):
+            suggested_text = "💡 建議接下來可以說：\n"
+            for i, suggestion in enumerate(result["suggested_responses"][:3], 1):
+                suggested_text += f"{i}. {suggestion}\n"
+
+        return result["recognized_text"], result["response_text"], suggested_text
         
     except Exception as e:
         print(f"自由對話處理錯誤: {str(e)}")
-        return "處理錯誤", "抱歉，處理您的語音時出現問題。請重試。"
+        return "處理錯誤", "抱歉，處理您的語音時出現問題。請重試。", ""
 
 def update_history(history):
     if not history:
@@ -420,7 +431,7 @@ def update_history(history):
         [
             entry["timestamp"],
             entry["scenario"],
-            entry.get("difficulty", "未記錄"),  # 顯示難度
+            entry.get("difficulty", "未記錄"),
             f"{entry['score']}分",
             entry["feedback"]
         ]
@@ -456,18 +467,14 @@ def export_conversation_history():
     
     return f"✅ 對話歷史已導出至: {filename}"
 
-# 初始化
 ensure_scenario_images()
 
-# 主Gradio界面
 with gr.Blocks(css=css_content, title="語言學習助教", theme=gr.themes.Soft()) as demo:
     history_state = gr.State([])
     current_mode = gr.State("initial")
 
-    # 主容器
     with gr.Column(elem_classes="main-container fade-in-up"):
         
-        # 標題區域
         with gr.Column(elem_classes="header-section"):
             gr.HTML("""
                 <div class="header-title">🗣️ 口說語言學習互動助教</div>
@@ -477,7 +484,6 @@ with gr.Blocks(css=css_content, title="語言學習助教", theme=gr.themes.Soft
                 </div>
             """)
 
-        # 系統狀態顯示
         with gr.Column(elem_classes="status-card"):
             if device_info["use_gpu"]:
                 current_usage = device_info.get('current_memory_usage', 0)
@@ -519,7 +525,6 @@ with gr.Blocks(css=css_content, title="語言學習助教", theme=gr.themes.Soft
                 """
             gr.HTML(status_html)
 
-        # 1. 初始設定區域（語言和難度選擇）
         with gr.Column(elem_classes="initial-settings", visible=True) as initial_settings:
             gr.HTML("<h3 style='text-align: center; margin-bottom: 25px; color: #374151;'>⚙️ 系統設定</h3>")
             
@@ -539,7 +544,6 @@ with gr.Blocks(css=css_content, title="語言學習助教", theme=gr.themes.Soft
                 ], label="📊 難度級別", value="初級 (TOEIC 405-600分)",
                 elem_classes="gradio-dropdown")
             
-            # 設定確認按鈕
             settings_status = gr.Textbox(label="設定狀態", interactive=False, visible=False)
             confirm_settings_btn = gr.Button("✅ 確認設定", elem_classes="primary-btn")
 
@@ -555,7 +559,6 @@ with gr.Blocks(css=css_content, title="語言學習助教", theme=gr.themes.Soft
                     elem_classes="mode-btn"
                 )
 
-        # 2. 預設場景選擇區域
         with gr.Column(visible=False, elem_classes="fade-in-up") as preset_scenario_selection:
             gr.HTML("<h2 style='text-align: center; margin-bottom: 30px; color: #374151;'>🎭 選擇練習場景</h2>")
             
@@ -592,11 +595,9 @@ with gr.Blocks(css=css_content, title="語言學習助教", theme=gr.themes.Soft
                         elif i == 5:
                             scenario_btn_6 = gr.Button("選擇此場景", elem_classes="scenario-btn")
 
-        # 3. 預設場景對話區域（選擇場景後才顯示）
         with gr.Column(visible=False, elem_classes="fade-in-up") as preset_conversation_area:
             scenario_title = gr.HTML("<h2 style='text-align: center; margin-bottom: 20px; color: #374151;'>🎭 當前場景</h2>")
             
-            # 角色設定
             with gr.Row():
                 assistant_role = gr.Textbox(
                     label="🤖 助教角色",
@@ -609,7 +610,6 @@ with gr.Blocks(css=css_content, title="語言學習助教", theme=gr.themes.Soft
                     elem_classes="gradio-textbox"
                 )
 
-            # 對話區域
             with gr.Column(elem_classes="conversation-area"):
                 gr.HTML("<h3 style='margin-bottom: 20px; color: #374151;'>💬 對話區域</h3>")
                 
@@ -635,18 +635,24 @@ with gr.Blocks(css=css_content, title="語言學習助教", theme=gr.themes.Soft
                             elem_classes="gradio-textbox"
                         )
 
+                        suggested_responses_display = gr.Textbox(
+                            label="💡 建議回覆句子",
+                            lines=4,
+                            interactive=False,
+                            elem_classes="gradio-textbox"
+                        )
+
                         with gr.Row():
                             retry_btn = gr.Button("🔄 重新錄製", elem_classes="secondary-btn")
                             submit_audio_btn = gr.Button("🚀 提交回應", elem_classes="primary-btn")
 
-            # 回饋區域 - 擴大對話框
             with gr.Accordion("📝 發音回饋與分析", open=True, elem_classes="advanced-section"):
                 with gr.Column(elem_classes="feedback-panel"):
                     with gr.Row():
                         with gr.Column(scale=3):
                             feedback_text = gr.Textbox(
                                 label="📋 詳細評估與改進建議", 
-                                lines=8,  # 增加行數讓對話框更大
+                                lines=8,
                                 interactive=False,
                                 elem_classes="gradio-textbox"
                             )
@@ -666,7 +672,6 @@ with gr.Blocks(css=css_content, title="語言學習助教", theme=gr.themes.Soft
                                     elem_classes="score-display"
                                 )
 
-            # 進階設定
             with gr.Accordion("⚙️ 進階功能設定", open=False, elem_classes="advanced-section"):
                 gr.HTML("<h4 style='margin: 15px 0; color: #374151;'>🔊 發音評估設定</h4>")
                 
@@ -718,7 +723,6 @@ with gr.Blocks(css=css_content, title="語言學習助教", theme=gr.themes.Soft
                         label="練習記錄"
                     )
 
-        # 4. 自由對話模式
         with gr.Column(visible=False, elem_classes="fade-in-up") as free_dialog_mode:
             gr.HTML("<h2 style='text-align: center; margin-bottom: 30px; color: #374151;'>💭 自由對話</h2>")
 
@@ -739,6 +743,27 @@ with gr.Blocks(css=css_content, title="語言學習助教", theme=gr.themes.Soft
                     elem_classes="gradio-textbox"
                 )
 
+                with gr.Accordion("⚙️ 自由對話進階設定", open=True, elem_classes="advanced-section"):
+                    with gr.Row():
+                        free_pronunciation_focus = gr.CheckboxGroup(
+                            ["子音發音", "母音發音", "連音", "重音", "語調", "節奏"],
+                            value=["子音發音", "語調"],
+                            label="🎯 發音重點關注"
+                        )
+                        free_accent_preference = gr.Radio(
+                            ["美式英文", "英式英文", "不指定"],
+                            value="不指定",
+                            label="🌍 發音口音偏好"
+                        )
+                    
+                    with gr.Row():
+                        free_feedback_detail = gr.Radio(
+                            ["基本回饋", "詳細回饋", "專家級分析"],
+                            value="詳細回饋",
+                            label="📝 回饋詳細程度"
+                        )
+                        free_show_comparison = gr.Checkbox(label="📋 顯示發音比較", value=True)
+
                 with gr.Column(elem_classes="user-input"):
                     free_user_audio_input = gr.Audio(
                         label="🎤 錄製您的回應", 
@@ -752,15 +777,20 @@ with gr.Blocks(css=css_content, title="語言學習助教", theme=gr.themes.Soft
                         elem_classes="gradio-textbox"
                     )
 
+                    free_suggested_responses_display = gr.Textbox(
+                        label="💡 建議接下來可以說",
+                        lines=4,
+                        interactive=False,
+                        elem_classes="gradio-textbox"
+                    )
+
                     with gr.Row():
                         free_retry_btn = gr.Button("🔄 重新錄製", elem_classes="secondary-btn")
                         free_submit_audio_btn = gr.Button("🚀 提交回應", elem_classes="primary-btn")
 
-        # 返回按鈕
         with gr.Column(visible=False) as back_btn_group:
             back_btn = gr.Button("← 返回主選單", elem_classes="back-btn")
 
-        # 系統監控和統計
         with gr.Accordion("📊 系統監控與統計", open=False, elem_classes="advanced-section"):
             with gr.Row():
                 with gr.Column():
@@ -778,18 +808,14 @@ with gr.Blocks(css=css_content, title="語言學習助教", theme=gr.themes.Soft
                     stats_display = gr.JSON(label="系統狀態", elem_classes="stats-panel")
                     stats_refresh_btn = gr.Button("🔄 刷新統計", elem_classes="secondary-btn")
 
-    # 隱藏的默認值組件
     default_focus_area = gr.Textbox(value="綜合練習", visible=False)
 
-    # === 事件綁定 ===
-    
-    # 設定確認 - 修復難度選擇問題
     def update_settings_and_show_status(lang, diff):
         global current_language, current_difficulty
         current_language = lang
         current_difficulty = diff
         status_msg = f"✅ 已設定語言: {lang}, 難度: {diff}"
-        print(f"設定更新: 語言={lang}, 難度={diff}")  # 調試用
+        print(f"設定更新: 語言={lang}, 難度={diff}")
         return status_msg, gr.update(visible=True)
     
     confirm_settings_btn.click(
@@ -798,7 +824,6 @@ with gr.Blocks(css=css_content, title="語言學習助教", theme=gr.themes.Soft
         outputs=[settings_status, settings_status]
     )
     
-    # 語言和難度改變時也自動更新（即時更新）
     language.change(
         fn=lambda lang, diff: update_language_difficulty(lang, diff),
         inputs=[language, difficulty],
@@ -811,7 +836,6 @@ with gr.Blocks(css=css_content, title="語言學習助教", theme=gr.themes.Soft
         outputs=[]
     )
     
-    # 模式選擇
     preset_scenario_btn.click(
         fn=show_preset_mode,
         outputs=[initial_settings, preset_scenario_selection, preset_conversation_area, free_dialog_mode, back_btn_group, current_mode]
@@ -827,7 +851,6 @@ with gr.Blocks(css=css_content, title="語言學習助教", theme=gr.themes.Soft
         outputs=[initial_settings, preset_scenario_selection, preset_conversation_area, free_dialog_mode, back_btn_group, current_mode]
     )
 
-    # 場景選擇按鈕
     scenario_btn_1.click(
         fn=select_scenario,
         inputs=[gr.Number(value=0, visible=False)],
@@ -864,24 +887,22 @@ with gr.Blocks(css=css_content, title="語言學習助教", theme=gr.themes.Soft
         outputs=[preset_scenario_selection, preset_conversation_area, assistant_role, user_role, assistant_text, scenario_title]
     )
 
-    # 自由對話按鈕
     start_free_dialog_btn.click(
         fn=start_free_conversation,
         inputs=[custom_scenario],
         outputs=[free_assistant_text, free_dialog_area]
     )
 
-    # 提交音頻回應 - 預設場景
     submit_audio_btn.click(
         fn=process_user_audio,
         inputs=[
             user_audio_input, language, difficulty,
             default_focus_area, feedback_detail,
-            pronunciation_focus, accent_preference, track_progress
+            pronunciation_focus, accent_preference, track_progress, show_comparison
         ],
         outputs=[
             user_text, feedback_text, pronunciation_score,
-            fluency_score, assistant_text, history_state
+            fluency_score, assistant_text, history_state, suggested_responses_display
         ]
     ).then(
         fn=update_history,
@@ -889,25 +910,26 @@ with gr.Blocks(css=css_content, title="語言學習助教", theme=gr.themes.Soft
         outputs=[history_gallery, history_info]
     )
 
-    # 提交音頻回應 - 自由對話
     free_submit_audio_btn.click(
         fn=process_free_user_audio,
-        inputs=[free_user_audio_input, language, difficulty, custom_scenario],
-        outputs=[free_user_text, free_assistant_text]
+        inputs=[
+            free_user_audio_input, language, difficulty, custom_scenario,
+            free_pronunciation_focus, free_accent_preference, 
+            free_feedback_detail, free_show_comparison
+        ],
+        outputs=[free_user_text, free_assistant_text, free_suggested_responses_display]
     )
 
-    # 重試按鈕
     retry_btn.click(
-        fn=lambda: [None, ""],
-        outputs=[user_audio_input, user_text]
+        fn=lambda: [None, "", ""],
+        outputs=[user_audio_input, user_text, suggested_responses_display]
     )
 
     free_retry_btn.click(
-        fn=lambda: [None, ""],
-        outputs=[free_user_audio_input, free_user_text]
+        fn=lambda: [None, "", ""],
+        outputs=[free_user_audio_input, free_user_text, free_suggested_responses_display]
     )
     
-    # 歷史記錄管理
     clear_history_btn.click(
         fn=clear_conversation_history,
         outputs=[history_status, history_info]
@@ -918,19 +940,16 @@ with gr.Blocks(css=css_content, title="語言學習助教", theme=gr.themes.Soft
         outputs=[history_status]
     )
     
-    # 記憶體狀態查看
     memory_refresh_btn.click(
         fn=get_memory_status,
         outputs=[memory_status_display]
     )
     
-    # 系統統計查看
     stats_refresh_btn.click(
         fn=get_system_stats,
         outputs=[stats_display]
     )
 
-    # 初始載入狀態
     demo.load(
         fn=get_memory_status,
         outputs=[memory_status_display]
@@ -942,7 +961,7 @@ with gr.Blocks(css=css_content, title="語言學習助教", theme=gr.themes.Soft
     )
 
 if __name__ == "__main__":
-    print("=== 啟動語言學習助教（無TTS版本）===")
+    print("=== 啟動語言學習助教（完整進階功能整合版）===")
     print(f"使用設備: {device_info['device']}")
     print(f"Whisper可用: {device_info['whisper_available']}")
     print(f"Audio-LLM可用: {device_info['use_audio_llm']}")
@@ -952,7 +971,6 @@ if __name__ == "__main__":
     else:
         print("⚠️  CSS樣式文件載入失敗，使用默認樣式")
     
-    # 啟動參數
     launch_kwargs = {
         "share": True,
         "debug": True,

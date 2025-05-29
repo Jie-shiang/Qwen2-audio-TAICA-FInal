@@ -17,7 +17,9 @@ DIFFICULTY_CONFIGS = {
         "description": "Basic vocabulary and simple sentence structures",
         "evaluation_criteria": "Focus on basic pronunciation clarity and simple grammar",
         "encouragement_level": "very_encouraging",
-        "score_adjustment": +15
+        "score_adjustment": +15,
+        "vocabulary_level": "basic",
+        "sentence_complexity": "simple"
     },
     "初級 (TOEIC 405-600分)": {
         "level": "elementary",
@@ -25,7 +27,9 @@ DIFFICULTY_CONFIGS = {
         "description": "Elementary vocabulary with basic conversational skills",
         "evaluation_criteria": "Evaluate basic conversation flow and pronunciation accuracy",
         "encouragement_level": "encouraging",
-        "score_adjustment": +10
+        "score_adjustment": +10,
+        "vocabulary_level": "elementary",
+        "sentence_complexity": "basic"
     },
     "中級 (TOEIC 605-780分)": {
         "level": "intermediate",
@@ -33,7 +37,9 @@ DIFFICULTY_CONFIGS = {
         "description": "Intermediate vocabulary and complex sentence structures",
         "evaluation_criteria": "Assess fluency, natural expression, and grammar accuracy",
         "encouragement_level": "balanced",
-        "score_adjustment": 0
+        "score_adjustment": 0,
+        "vocabulary_level": "intermediate",
+        "sentence_complexity": "moderate"
     },
     "中高級 (TOEIC 785-900分)": {
         "level": "upper_intermediate",
@@ -41,7 +47,9 @@ DIFFICULTY_CONFIGS = {
         "description": "Advanced vocabulary with nuanced expressions",
         "evaluation_criteria": "Focus on natural flow, idiomatic expressions, and subtle pronunciation",
         "encouragement_level": "constructive",
-        "score_adjustment": -5
+        "score_adjustment": -5,
+        "vocabulary_level": "advanced",
+        "sentence_complexity": "complex"
     },
     "高級 (TOEIC 905+分)": {
         "level": "advanced",
@@ -49,204 +57,252 @@ DIFFICULTY_CONFIGS = {
         "description": "Professional-level vocabulary and sophisticated expressions",
         "evaluation_criteria": "Evaluate native-like fluency, sophisticated vocabulary usage, and professional communication",
         "encouragement_level": "detailed",
-        "score_adjustment": -10
+        "score_adjustment": -10,
+        "vocabulary_level": "professional",
+        "sentence_complexity": "sophisticated"
     }
 }
 
-def get_scenario_prompt(scenario, difficulty="中級 (TOEIC 605-780分)"):
-    """獲取基於難度的場景prompt"""
+def create_advanced_prompt(scenario, difficulty, pronunciation_focus, accent_preference, 
+                          feedback_detail, show_comparison, conversation_history=""):
+    """創建整合進階功能的完整 prompt"""
     
     difficulty_config = DIFFICULTY_CONFIGS.get(difficulty, DIFFICULTY_CONFIGS["中級 (TOEIC 605-780分)"])
     level = difficulty_config["level"]
     criteria = difficulty_config["evaluation_criteria"]
     encouragement = difficulty_config["encouragement_level"]
+    vocab_level = difficulty_config["vocabulary_level"]
+    sentence_complexity = difficulty_config["sentence_complexity"]
     
-    base_prompts = {
+    pronunciation_instructions = ""
+    if pronunciation_focus:
+        focus_areas = []
+        if "子音發音" in pronunciation_focus:
+            focus_areas.append("consonant clarity and accuracy")
+        if "母音發音" in pronunciation_focus:
+            focus_areas.append("vowel precision and positioning")
+        if "連音" in pronunciation_focus:
+            focus_areas.append("linking sounds and connected speech")
+        if "重音" in pronunciation_focus:
+            focus_areas.append("word stress and sentence stress patterns")
+        if "語調" in pronunciation_focus:
+            focus_areas.append("intonation patterns and pitch variation")
+        if "節奏" in pronunciation_focus:
+            focus_areas.append("rhythm, pacing, and natural flow")
+        
+        if focus_areas:
+            pronunciation_instructions = f"""
+PRONUNCIATION FOCUS AREAS (Priority Analysis):
+- Pay special attention to: {', '.join(focus_areas)}
+- Provide specific feedback on these aspects
+- Give targeted improvement suggestions for these areas
+"""
+
+    accent_instructions = ""
+    if accent_preference == "美式英文":
+        accent_instructions = """
+ACCENT TARGET: American English (General American)
+- Evaluate based on American pronunciation standards
+- Focus on rhotic 'r' sounds, flat 'a' in words like 'dance'
+- American intonation patterns and stress
+"""
+    elif accent_preference == "英式英文":
+        accent_instructions = """
+ACCENT TARGET: British English (Received Pronunciation)
+- Evaluate based on British pronunciation standards  
+- Focus on non-rhotic features, long 'a' in words like 'dance'
+- British intonation patterns and received pronunciation
+"""
+    else:
+        accent_instructions = """
+ACCENT APPROACH: Flexible/International English
+- Accept both American and British variations
+- Focus on clarity and intelligibility over specific accent
+"""
+
+    feedback_instructions = ""
+    if feedback_detail == "基本回饋":
+        feedback_instructions = """
+FEEDBACK LEVEL: Basic (Concise)
+- Provide simple, easy-to-understand feedback
+- Focus on 1-2 main improvement points
+- Keep suggestions practical and actionable
+"""
+    elif feedback_detail == "詳細回饋":
+        feedback_instructions = """
+FEEDBACK LEVEL: Detailed (Comprehensive)
+- Provide thorough analysis of pronunciation aspects
+- Include specific examples and comparisons
+- Offer multiple improvement strategies
+"""
+    else:
+        feedback_instructions = """
+FEEDBACK LEVEL: Expert Analysis (In-depth)
+- Provide linguistic analysis of pronunciation features
+- Include phonetic explanations and technical details
+- Offer advanced practice techniques and exercises
+"""
+
+    scenario_base_prompts = {
         "機場對話 (Airport Conversation)": f"""You are an airport staff member helping a traveler at {level} English level (TOEIC {difficulty_config['toeic_range']}). 
 
-Analyze the user's spoken English considering their proficiency level:
-1. {criteria}
-2. Check if they used appropriate phrases for airport scenarios at their level
-3. Provide {encouragement} feedback and corrections
-4. Continue the conversation naturally as airport staff
-5. Adjust your language complexity to match their {level} level
+ROLE & SCENARIO: Airport staff assisting with check-in, security, customs, or boarding procedures.
 
-Keep responses helpful and appropriate for {level} learners.""",
+LANGUAGE LEVEL: Use {vocab_level} vocabulary and {sentence_complexity} sentence structures appropriate for {level} learners.""",
 
-        "餐廳點餐 (Restaurant Ordering)": f"""You are a restaurant waiter taking orders from a {level} English learner (TOEIC {difficulty_config['toeic_range']}). 
+        "餐廳點餐 (Restaurant Ordering)": f"""You are a restaurant server taking orders from a {level} English learner (TOEIC {difficulty_config['toeic_range']}). 
 
-Analyze the customer's spoken English:
-1. {criteria}
-2. Check if they used polite ordering phrases appropriate for their level
-3. Suggest better expressions with {encouragement} tone
-4. Respond naturally as a waiter would, matching their {level} level
-5. Focus on food-related vocabulary suitable for their proficiency
+ROLE & SCENARIO: Friendly restaurant server helping with menu selection, taking orders, and providing dining assistance.
 
-Be friendly and patient with {level} learners.""",
+LANGUAGE LEVEL: Use {vocab_level} vocabulary and {sentence_complexity} sentence structures appropriate for {level} learners.""",
 
-        "求職面試 (Job Interview)": f"""You are a job interviewer speaking with a {level} English candidate (TOEIC {difficulty_config['toeic_range']}). 
+        "求職面試 (Job Interview)": f"""You are a professional interviewer speaking with a {level} English candidate (TOEIC {difficulty_config['toeic_range']}). 
 
-Analyze the candidate's spoken English:
-1. {criteria}
-2. Evaluate their professional vocabulary usage at {level} level
-3. Assess confidence and communication skills appropriate for their proficiency
-4. Ask follow-up questions suitable for {level} speakers
-5. Provide {encouragement} feedback on their interview performance
+ROLE & SCENARIO: Professional interviewer conducting a job interview, asking relevant questions and providing follow-ups.
 
-Maintain a professional but supportive tone for {level} learners.""",
+LANGUAGE LEVEL: Use {vocab_level} vocabulary and {sentence_complexity} sentence structures appropriate for {level} learners.""",
 
         "日常社交 (Daily Social Conversation)": f"""You are a friendly conversation partner with a {level} English speaker (TOEIC {difficulty_config['toeic_range']}). 
 
-Analyze their English conversation skills:
-1. {criteria}
-2. Check natural expression usage at their proficiency level
-3. Suggest more native-like phrases with {encouragement} approach
-4. Keep the conversation flowing naturally at {level} complexity
-5. Focus on casual expressions appropriate for their level
+ROLE & SCENARIO: Casual friend or acquaintance engaging in everyday social conversation.
 
-Be supportive and encouraging with {level} learners.""",
+LANGUAGE LEVEL: Use {vocab_level} vocabulary and {sentence_complexity} sentence structures appropriate for {level} learners.""",
 
-        "醫療諮詢 (Medical Consultation)": f"""You are a doctor/nurse speaking with a {level} English patient (TOEIC {difficulty_config['toeic_range']}). 
+        "醫療諮詢 (Medical Consultation)": f"""You are a healthcare professional speaking with a {level} English patient (TOEIC {difficulty_config['toeic_range']}). 
 
-Analyze the patient's spoken English:
-1. {criteria}
-2. Check if they can express health concerns at their proficiency level
-3. Provide {encouragement} feedback on medical vocabulary usage
-4. Respond professionally but clearly for {level} speakers
-5. Use medical terms appropriate for their English level
+ROLE & SCENARIO: Doctor, nurse, or medical staff conducting consultation and providing medical guidance.
 
-Be patient and clear with {level} English patients.""",
+LANGUAGE LEVEL: Use {vocab_level} vocabulary and {sentence_complexity} sentence structures appropriate for {level} learners.""",
 
-        "學術討論 (Academic Discussion)": f"""You are a professor/lecturer with a {level} English student (TOEIC {difficulty_config['toeic_range']}). 
+        "學術討論 (Academic Discussion)": f"""You are an academic professional (professor/researcher) with a {level} English student (TOEIC {difficulty_config['toeic_range']}). 
 
-Analyze the student's academic English:
-1. {criteria}
-2. Evaluate their ability to discuss academic topics at {level} proficiency
-3. Assess their use of academic vocabulary and expressions
-4. Provide {encouragement} feedback on their academic communication
-5. Ask questions appropriate for {level} academic discussions
+ROLE & SCENARIO: Academic setting with professor or researcher engaging in educational discussion.
 
-Maintain an academic but supportive tone for {level} learners."""
+LANGUAGE LEVEL: Use {vocab_level} vocabulary and {sentence_complexity} sentence structures appropriate for {level} learners.""",
+
+        "自由對話": f"""You are a helpful language learning assistant engaging with a {level} English learner (TOEIC {difficulty_config['toeic_range']}).
+
+ROLE & SCENARIO: Adaptive conversation partner for the user's specified scenario or topic.
+
+LANGUAGE LEVEL: Use {vocab_level} vocabulary and {sentence_complexity} sentence structures appropriate for {level} learners."""
     }
-    
-    return base_prompts.get(scenario, base_prompts["日常社交 (Daily Social Conversation)"])
+
+    base_prompt = scenario_base_prompts.get(scenario, scenario_base_prompts["日常社交 (Daily Social Conversation)"])
+
+    system_prompt = f"""{base_prompt}
+
+{pronunciation_instructions}
+{accent_instructions}
+{feedback_instructions}
+
+ANALYSIS REQUIREMENTS:
+1. {criteria}
+2. Provide {encouragement} feedback with {difficulty_config['encouragement_level']} tone
+3. Use examples appropriate for {level} proficiency level
+4. Focus on practical improvement suggestions
+
+RESPONSE FORMAT:
+Your response must include EXACTLY these sections:
+
+**PRONUNCIATION ANALYSIS:**
+- Overall pronunciation score: [X]/100
+- Specific feedback on the student's pronunciation quality
+- Highlight both strengths and areas for improvement
+{pronunciation_instructions.replace('PRONUNCIATION FOCUS AREAS (Priority Analysis):', '- Special attention to:') if pronunciation_focus else ''}
+
+**CONVERSATION RESPONSE:**
+[Your natural response as the role character, continuing the conversation]
+
+**SUGGESTED NEXT RESPONSES:**
+Provide 2-3 suggested responses the student could use to continue this conversation:
+1. [First suggestion - basic response]
+2. [Second suggestion - intermediate response] 
+3. [Third suggestion - more advanced response]
+
+Each suggestion should be appropriate for the {level} level and include brief explanations of when to use each option.
+
+CONVERSATION CONTEXT: {conversation_history}"""
+
+    return system_prompt
 
 def get_scenario_responses(scenario, difficulty="中級 (TOEIC 605-780分)"):
-    """獲取基於難度的場景回應"""
+    """獲取基於難度的場景回應（備用簡化模式使用）"""
     
     difficulty_config = DIFFICULTY_CONFIGS.get(difficulty, DIFFICULTY_CONFIGS["中級 (TOEIC 605-780分)"])
     level = difficulty_config["level"]
     
-    if level in ["beginner", "elementary"]:
-        responses = {
+    responses_by_level = {
+        "beginner": {
             "機場對話 (Airport Conversation)": [
-                "Thank you. What is your destination?",
+                "Hello! Passport, please?",
+                "Where are you going today?", 
                 "How long will you stay?",
-                "Do you have anything to declare?",
-                "Please go to gate 12.",
-                "Your boarding pass, please.",
-                "Window or aisle seat?"
+                "Any bags to check?",
+                "Gate 12. Have a nice flight!",
+                "Thank you. Next, please!"
             ],
             "餐廳點餐 (Restaurant Ordering)": [
+                "Hi! Table for how many?",
+                "Here's the menu. Take your time.",
+                "Ready to order?",
                 "What would you like to drink?",
-                "Are you ready to order?",
-                "Would you like appetizers?",
-                "How do you want your steak?",
-                "Would you like dessert?",
-                "Here is your check."
+                "Great choice! Anything else?",
+                "Your meal will be ready soon."
             ],
             "求職面試 (Job Interview)": [
+                "Nice to meet you. Please sit down.",
                 "Tell me about yourself.",
-                "What are your strengths?",
                 "Why do you want this job?",
-                "Do you have questions?",
-                "When can you start?",
-                "Thank you for coming."
+                "What are your strengths?",
+                "Do you have questions for us?",
+                "Thank you for coming today."
             ],
             "日常社交 (Daily Social Conversation)": [
-                "How was your weekend?",
-                "What do you like to do?",
-                "Have you seen good movies?",
-                "How is the weather?",
-                "Do you have plans tonight?",
-                "Nice talking with you!"
+                "Hi! How are you today?",
+                "Nice weather, isn't it?",
+                "What do you do for work?",
+                "Do you live around here?",
+                "Have a great day!",
+                "See you later!"
             ]
-        }
-    elif level == "intermediate":
-        responses = {
+        },
+        "intermediate": {
             "機場對話 (Airport Conversation)": [
-                "Thank you. What is the purpose of your visit?",
-                "How long will you be staying in the country?",
-                "Do you have anything to declare at customs?",
-                "Please proceed to gate 12. Have a nice flight!",
-                "Could I see your boarding pass, please?",
-                "Would you prefer a window or aisle seat?"
+                "Good morning! May I see your passport and ticket?",
+                "What's the purpose of your visit to our country?",
+                "How long are you planning to stay?",
+                "Do you have anything to declare?",
+                "Please proceed to gate 15. Boarding starts at 3 PM.",
+                "Have a pleasant journey!"
             ],
             "餐廳點餐 (Restaurant Ordering)": [
-                "What would you like to drink with your meal?",
-                "Are you ready to place your order?",
-                "Would you care for any appetizers to start?",
-                "How would you like your steak prepared?",
-                "Would you be interested in dessert?",
-                "Here's your check. Thank you for dining with us!"
-            ],
-            "求職面試 (Job Interview)": [
-                "Could you tell me about your background?",
-                "What would you say are your key strengths?",
-                "Why are you interested in working here?",
-                "Do you have any questions about the position?",
-                "When would you be available to start?",
-                "Thank you for your time. We'll be in touch."
-            ],
-            "日常社交 (Daily Social Conversation)": [
-                "How did you spend your weekend?",
-                "What do you enjoy doing in your free time?",
-                "Have you watched any good movies recently?",
-                "What do you think of today's weather?",
-                "Do you have any interesting plans this evening?",
-                "It's been really nice chatting with you!"
+                "Welcome! Do you have a reservation?",
+                "Would you prefer a table by the window?",
+                "Can I get you started with something to drink?",
+                "Our special today is grilled salmon with vegetables.",
+                "How would you like your steak cooked?",
+                "Would you care for dessert or coffee?"
             ]
-        }
-    else:
-        responses = {
+        },
+        "advanced": {
             "機場對話 (Airport Conversation)": [
-                "Thank you for your passport. Could you please tell me the purpose of your visit?",
-                "How long are you planning to stay, and do you have your return ticket?",
-                "Do you have anything to declare, including gifts or items for commercial use?",
-                "Please make your way to gate 12. Your flight should begin boarding in about 30 minutes.",
-                "I'll need to see your boarding pass and ID for verification, please.",
-                "I can offer you either a window seat with a view or an aisle seat for easier access."
-            ],
-            "餐廳點餐 (Restaurant Ordering)": [
-                "Good evening! What can I get you to drink while you're looking over the menu?",
-                "Have you had a chance to decide, or would you like me to recommend today's specials?",
-                "Would you be interested in starting with any of our appetizers or sharing plates?",
-                "For the steak, how would you prefer it cooked - rare, medium, or well-done?",
-                "We have some excellent desserts tonight. Would you like to hear about them?",
-                "Here's your bill. I hope you've enjoyed your dining experience with us tonight!"
-            ],
-            "求職面試 (Job Interview)": [
-                "I'd like to start by having you walk me through your professional background and experience.",
-                "What would you consider to be your most significant professional strengths and accomplishments?",
-                "What attracts you to our company, and how do you see yourself contributing to our team?",
-                "I'd be happy to answer any questions you might have about the role or our company culture.",
-                "Assuming we move forward, what would be your ideal timeline for transitioning into this position?",
-                "Thank you for taking the time to meet with us today. We'll follow up within the next few days."
-            ],
-            "日常社交 (Daily Social Conversation)": [
-                "I'm curious to hear how you spent your weekend - did you get up to anything interesting?",
-                "What kinds of activities do you find most enjoyable during your downtime?",
-                "Have you come across any particularly good films or shows that you'd recommend lately?",
-                "This weather has been quite something, hasn't it? How are you finding it?",
-                "Do you have anything exciting planned for later this evening or the rest of the week?",
-                "I've really enjoyed our conversation - it's been such a pleasure talking with you!"
+                "Good afternoon. I'll need to verify your travel documents.",
+                "Could you clarify the nature of your business visit?",
+                "I notice your return flight is quite far out. Any particular reason for the extended stay?",
+                "For customs purposes, are you carrying any items that exceed the duty-free allowance?",
+                "Your gate assignment is B7, and I'd recommend arriving 30 minutes before boarding.",
+                "I hope you have a productive and enjoyable trip."
             ]
         }
-        
-    return responses.get(scenario, responses["日常社交 (Daily Social Conversation)"])
+    }
+    
+    level_responses = responses_by_level.get(level, responses_by_level["intermediate"])
+    scenario_responses = level_responses.get(scenario, level_responses.get("日常社交 (Daily Social Conversation)", ["Hello!", "How can I help you?"]))
+    
+    return scenario_responses
 
 class AudioProcessor:
-    """音頻處理類"""
+    """音頻處理類（改進版）"""
     
     def __init__(self):
         self.model_manager = get_model_manager()
@@ -267,47 +323,57 @@ class AudioProcessor:
         except Exception as e:
             return None, f"語音識別錯誤: {str(e)}"
     
-    def analyze_pronunciation(self, audio_path, transcribed_text, scenario, conversation_history="", difficulty="中級 (TOEIC 605-780分)"):
-        """發音分析 - 包含難度級別"""
+    def analyze_pronunciation(self, audio_path, transcribed_text, scenario, conversation_history="", 
+                            difficulty="中級 (TOEIC 605-780分)", pronunciation_focus=None, 
+                            accent_preference="不指定", feedback_detail="詳細回饋", 
+                            show_comparison=True, **kwargs):
+        """發音分析 - 完整整合進階功能"""
         try:
             analysis_result = self._analyze_with_audio_llm(
-                audio_path, transcribed_text, scenario, conversation_history, difficulty
+                audio_path, transcribed_text, scenario, conversation_history, 
+                difficulty, pronunciation_focus, accent_preference, 
+                feedback_detail, show_comparison, **kwargs
             )
             
             if analysis_result:
                 return analysis_result
             else:
-                return self._analyze_with_simple_method(transcribed_text, scenario, difficulty)
+                return self._analyze_with_simple_method(
+                    transcribed_text, scenario, difficulty, pronunciation_focus, 
+                    accent_preference, feedback_detail
+                )
                 
         except Exception as e:
             print(f"發音分析錯誤: {e}")
-            return self._analyze_with_simple_method(transcribed_text, scenario, difficulty)
+            return self._analyze_with_simple_method(
+                transcribed_text, scenario, difficulty, pronunciation_focus, 
+                accent_preference, feedback_detail
+            )
     
-    def _analyze_with_audio_llm(self, audio_path, transcribed_text, scenario, conversation_history, difficulty):
-        """使用Audio-LLM進行詳細分析 - 包含難度調整"""
+    def _analyze_with_audio_llm(self, audio_path, transcribed_text, scenario, conversation_history, 
+                               difficulty, pronunciation_focus, accent_preference, feedback_detail, 
+                               show_comparison, **kwargs):
+        """使用Audio-LLM進行詳細分析 - 整合所有進階功能"""
         try:
-            system_prompt = get_scenario_prompt(scenario, difficulty)
+            system_prompt = create_advanced_prompt(
+                scenario, difficulty, pronunciation_focus, accent_preference,
+                feedback_detail, show_comparison, conversation_history
+            )
             
             difficulty_config = DIFFICULTY_CONFIGS.get(difficulty, DIFFICULTY_CONFIGS["中級 (TOEIC 605-780分)"])
             
             full_prompt = f"""<|im_start|>system
 {system_prompt}
-
-Student's proficiency level: {difficulty_config['level']} (TOEIC {difficulty_config['toeic_range']})
-Expected competency: {difficulty_config['description']}
-
-Previous conversation:
-{conversation_history}
-
-Student said: "{transcribed_text}"
-
-Please provide feedback appropriate for their {difficulty_config['level']} level with {difficulty_config['encouragement_level']} tone.
 <|im_end|>
 <|im_start|>user
 <|AUDIO|>
-Please analyze the pronunciation and respond for the {scenario} scenario, considering the student's {difficulty_config['level']} proficiency level.<|im_end|>
+The student said: "{transcribed_text}"
+
+Please analyze their pronunciation and provide your response according to the specified format, considering their {difficulty_config['level']} proficiency level.
+<|im_end|>
 <|im_start|>assistant
 """
+            
             response = self.model_manager.generate_audio_response(audio_path, full_prompt)
             
             if response:
@@ -319,7 +385,11 @@ Please analyze the pronunciation and respond for the {scenario} scenario, consid
             print(f"Audio-LLM分析失敗: {e}")
             return None
     
-    def _analyze_with_simple_method(self, transcribed_text, scenario, difficulty):        
+    def _analyze_with_simple_method(self, transcribed_text, scenario, difficulty, 
+                                   pronunciation_focus=None, accent_preference="不指定", 
+                                   feedback_detail="詳細回饋"):
+        """簡化分析模式 - 也整合進階功能設定"""
+        
         difficulty_config = DIFFICULTY_CONFIGS.get(difficulty, DIFFICULTY_CONFIGS["中級 (TOEIC 605-780分)"])
         
         pronunciation_score = self._calculate_pronunciation_score(transcribed_text)
@@ -328,19 +398,160 @@ Please analyze the pronunciation and respond for the {scenario} scenario, consid
         pronunciation_score += difficulty_config["score_adjustment"]
         pronunciation_score = max(40, min(100, pronunciation_score))
         
-        pronunciation_analysis = self._generate_difficulty_based_analysis(transcribed_text, pronunciation_score, difficulty_config)
+        pronunciation_analysis = self._generate_advanced_analysis(
+            transcribed_text, pronunciation_score, difficulty_config, 
+            pronunciation_focus, accent_preference, feedback_detail
+        )
         
         responses = get_scenario_responses(scenario, difficulty)
         response_text = random.choice(responses)
         
+        suggested_responses = self._generate_suggested_responses(scenario, difficulty_config, transcribed_text)
+        
         return {
             "pronunciation_analysis": pronunciation_analysis,
             "response_text": response_text,
+            "suggested_responses": suggested_responses,
             "pronunciation_score": pronunciation_score,
             "fluency_score": fluency_score
         }
     
+    def _generate_advanced_analysis(self, text, score, difficulty_config, pronunciation_focus, 
+                                   accent_preference, feedback_detail):
+        """根據進階設定生成分析內容"""
+        
+        level = difficulty_config["level"]
+        encouragement = difficulty_config["encouragement_level"]
+        
+        analysis = f"📊 發音評분: {score}/100 ({level} 級別標準)\n\n"
+        
+        if feedback_detail == "基本回饋":
+            if score >= 80:
+                analysis += f"🌟 表現很好！繼續保持這樣的練習。"
+            elif score >= 70:
+                analysis += f"👍 基礎不錯，建議繼續改進發音準確度。"
+            else:
+                analysis += f"💪 有進步空間，建議多練習基本發音。"
+        
+        elif feedback_detail == "詳細回饋":
+            analysis += self._get_detailed_feedback(text, score, level, pronunciation_focus)
+            
+        else:
+            analysis += self._get_expert_feedback(text, score, level, pronunciation_focus, accent_preference)
+        
+        if pronunciation_focus:
+            analysis += "\n\n🎯 重點改進建議：\n"
+            focus_tips = {
+                "子音發音": "練習清晰的子音發音，特別注意 th, r, l 等音素",
+                "母音發音": "注意母音的精確度，避免音位偏移",
+                "連音": "練習自然的連音技巧，讓語流更順暢",
+                "重音": "掌握單字重音和句子重音的規律",
+                "語調": "練習適當的語調變化，增加表達的自然度",
+                "節奏": "控制說話節奏，適當的停頓和語速"
+            }
+            
+            for focus in pronunciation_focus:
+                if focus in focus_tips:
+                    analysis += f"• {focus_tips[focus]}\n"
+        
+        if accent_preference != "不指定":
+            analysis += f"\n🌍 口音建議：針對{accent_preference}發音特點進行練習"
+        
+        return analysis
+    
+    def _get_detailed_feedback(self, text, score, level, pronunciation_focus):
+        """生成詳細回饋"""
+        word_count = len(text.split())
+        
+        feedback = ""
+        if score >= 85:
+            feedback += f"🎉 優秀的{level}水平表現！語音清晰，表達自然。\n\n"
+        elif score >= 75:
+            feedback += f"✅ 良好的{level}水平，有明顯的語言能力基礎。\n\n"
+        else:
+            feedback += f"📚 {level}水平的基礎練習，建議加強基本發音。\n\n"
+        
+        feedback += f"📝 詳細分析：\n"
+        feedback += f"- 發音長度: {word_count} 個單字\n"
+        feedback += f"- 語言複雜度: {'適中' if 5 <= word_count <= 15 else '較簡單' if word_count < 5 else '較複雜'}\n"
+        feedback += f"- 整體流暢度: {'良好' if score >= 80 else '尚可' if score >= 70 else '需改進'}\n"
+        
+        return feedback
+    
+    def _get_expert_feedback(self, text, score, level, pronunciation_focus, accent_preference):
+        """生成專家級回饋"""
+        feedback = f"🔬 專家級語音分析 ({level} 水平)：\n\n"
+        
+        feedback += f"📊 語音質量評估：\n"
+        feedback += f"- 音素準確度: {score}%\n"
+        feedback += f"- 韻律特徵: {'自然' if score >= 85 else '可改進'}\n"
+        feedback += f"- 語流連貫性: {'流暢' if score >= 80 else '需加強'}\n\n"
+        
+        feedback += f"🎯 專業改進建議：\n"
+        if pronunciation_focus:
+            feedback += f"- 重點練習領域: {', '.join(pronunciation_focus)}\n"
+        
+        if accent_preference != "不指定":
+            feedback += f"- 目標口音: {accent_preference}標準\n"
+            feedback += f"- 建議練習材料: 針對{accent_preference}的語音資源\n"
+        
+        feedback += f"- 練習頻率建議: 每日15-20分鐘專項練習\n"
+        feedback += f"- 進階練習: 影子跟讀、語調模仿、錄音對比\n"
+        
+        return feedback
+    
+    def _generate_suggested_responses(self, scenario, difficulty_config, user_text):
+        """生成建議回覆句子"""
+        level = difficulty_config["level"]
+        
+        suggestions = {
+            "機場對話 (Airport Conversation)": {
+                "beginner": [
+                    "Thank you. Here is my passport.",
+                    "I am here for vacation.",
+                    "I will stay for one week."
+                ],
+                "intermediate": [
+                    "Thank you. Here are my travel documents.",
+                    "I'm visiting for tourism purposes.",
+                    "I plan to stay for about ten days."
+                ],
+                "advanced": [
+                    "Certainly. Here are my passport and boarding pass.",
+                    "I'm here on a business trip with some leisure time.",
+                    "I'll be staying for approximately two weeks for both business and tourism."
+                ]
+            },
+            "餐廳點餐 (Restaurant Ordering)": {
+                "beginner": [
+                    "I want a burger, please.",
+                    "Can I have water?",
+                    "How much is it?"
+                ],
+                "intermediate": [
+                    "I'd like to order the grilled chicken, please.",
+                    "Could I have a glass of water with that?",
+                    "What's the total cost?"
+                ],
+                "advanced": [
+                    "I'd be interested in trying your signature dish.",
+                    "Could you recommend a wine pairing with that?",
+                    "I'd like to split the bill, if that's possible."
+                ]
+            }
+        }
+        
+        scenario_suggestions = suggestions.get(scenario, {})
+        level_suggestions = scenario_suggestions.get(level, [
+            "That sounds good.",
+            "I understand. Thank you.",
+            "Could you please explain more?"
+        ])
+        
+        return level_suggestions
+    
     def _calculate_pronunciation_score(self, text):
+        """計算發音分數"""
         base_score = 70
         
         word_count = len(text.split())
@@ -358,6 +569,7 @@ Please analyze the pronunciation and respond for the {scenario} scenario, consid
         return max(60, min(95, final_score))
     
     def _calculate_fluency_score(self, text):
+        """計算流暢度分數"""
         base_score = 75
         
         sentence_count = text.count('.') + text.count('?') + text.count('!')
@@ -378,61 +590,8 @@ Please analyze the pronunciation and respond for the {scenario} scenario, consid
         final_score = base_score + structure_bonus + random_factor
         return max(65, min(90, final_score))
     
-    def _generate_difficulty_based_analysis(self, text, score, difficulty_config):
-        level = difficulty_config["level"]
-        encouragement = difficulty_config["encouragement_level"]
-        
-        analysis = f"📊 發音評分: {score}/100 ({level} 級別標準)\n\n"
-        
-        if level == "beginner":
-            if score >= 80:
-                analysis += "🌟 對於初學者來說表現很棒！發音清晰，繼續保持這樣的練習。"
-            elif score >= 70:
-                analysis += "👍 很好的開始！建議多練習基本發音，特別注意清楚地說出每個單詞。"
-            else:
-                analysis += "💪 不要擔心，每個人都是從這裡開始的！建議先練習簡單的單詞發音。"
-        
-        elif level == "elementary":
-            if score >= 85:
-                analysis += "🎉 初級水平表現優秀！可以開始嘗試更複雜的句子結構。"
-            elif score >= 75:
-                analysis += "✅ 發音基礎很好，建議加強語調的自然度和句子的連貫性。"
-            else:
-                analysis += "📚 基礎不錯，建議多聽多模仿標準發音來提升準確度。"
-        
-        elif level == "intermediate":
-            if score >= 90:
-                analysis += "🏆 中級水平的優秀表現！語調自然，表達流暢。"
-            elif score >= 80:
-                analysis += "👌 表現良好，建議在語調變化和自然表達方面繼續改進。"
-            else:
-                analysis += "🔄 基本正確，建議加強發音準確性和表達的自然度。"
-        
-        elif level == "upper_intermediate":
-            if score >= 92:
-                analysis += "🌟 中高級水平表現卓越！接近母語者的自然度。"
-            elif score >= 85:
-                analysis += "💎 很好的中高級表現，建議關注更細緻的語音語調變化。"
-            else:
-                analysis += "⚡ 有進步空間，建議加強高級表達方式和語音細節的掌握。"
-        
-        else:  # advanced
-            if score >= 95:
-                analysis += "🎯 高級水平的完美表現！語言運用近乎母語水平。"
-            elif score >= 90:
-                analysis += "🚀 優秀的高級表現，建議在更複雜的語境中練習專業表達。"
-            else:
-                analysis += "📈 以高級標準來看還有提升空間，建議加強專業詞彙和複雜表達的掌握。"
-        
-        word_count = len(text.split())
-        if word_count < 5 and level not in ["beginner"]:
-            analysis += f"\n\n💡 建議：嘗試使用更完整和豐富的句子來表達想法，這樣更符合{level}水平的要求。"
-        elif word_count >= 10 and level == "beginner":
-            analysis += f"\n\n🎉 很好！您使用了比較長的句子，這對初學者來說很不錯。"
-        
-        return analysis
-    
     def _parse_llm_response(self, response, transcribed_text, scenario, difficulty):
+        """解析LLM回應 - 提取建議回覆"""
         lines = response.split('\n')
         
         difficulty_config = DIFFICULTY_CONFIGS.get(difficulty, DIFFICULTY_CONFIGS["中級 (TOEIC 605-780分)"])
@@ -442,27 +601,47 @@ Please analyze the pronunciation and respond for the {scenario} scenario, consid
         fluency_score = 80
         pronunciation_analysis = ""
         response_text = ""
+        suggested_responses = []
+        
+        current_section = ""
         
         for line in lines:
             line = line.strip()
             if not line:
                 continue
-                
-            if "pronunciation" in line.lower() and any(char.isdigit() for char in line):
-                try:
+            
+            if "**PRONUNCIATION ANALYSIS:**" in line or "PRONUNCIATION ANALYSIS:" in line:
+                current_section = "analysis"
+                continue
+            elif "**CONVERSATION RESPONSE:**" in line or "CONVERSATION RESPONSE:" in line:
+                current_section = "response"
+                continue
+            elif "**SUGGESTED NEXT RESPONSES:**" in line or "SUGGESTED NEXT RESPONSES:" in line:
+                current_section = "suggestions"
+                continue
+            
+            if current_section == "analysis":
+                if "score:" in line.lower() and any(char.isdigit() for char in line):
                     numbers = re.findall(r'\d+', line)
                     if numbers:
                         score = int(numbers[0])
                         if 0 <= score <= 100:
                             pronunciation_score = score
-                except:
-                    pass
-            
-            if any(keyword in line.lower() for keyword in ["pronunciation", "accent", "clarity", "analysis"]):
                 pronunciation_analysis += line + "\n"
             
-            if any(keyword in line for keyword in ["?", "Please", "Would", "Can", "How", "What"]):
-                response_text += line + " "
+            elif current_section == "response":
+                if not line.startswith("**") and not line.startswith("SUGGESTED"):
+                    response_text += line + " "
+            
+            elif current_section == "suggestions":
+                if line.startswith(("1.", "2.", "3.", "-", "•")):
+                    suggestion = re.sub(r'^[123\-•]\s*', '', line)
+                    suggestion = re.sub(r'\[.*?\]', '', suggestion).strip()
+                    if suggestion:
+                        suggested_responses.append(suggestion)
+        
+        if not suggested_responses:
+            suggested_responses = self._generate_suggested_responses(scenario, difficulty_config, transcribed_text)
         
         if not response_text.strip():
             responses = get_scenario_responses(scenario, difficulty)
@@ -474,6 +653,7 @@ Please analyze the pronunciation and respond for the {scenario} scenario, consid
         return {
             "pronunciation_analysis": pronunciation_analysis.strip(),
             "response_text": response_text.strip(),
+            "suggested_responses": suggested_responses,
             "pronunciation_score": pronunciation_score,
             "fluency_score": fluency_score
         }
@@ -483,12 +663,15 @@ class ConversationManager:
         self.audio_processor = AudioProcessor()
         self.conversation_history = []
     
-    def process_user_input(self, audio_path, scenario, conversation_context="", difficulty="中級 (TOEIC 605-780分)"):
-        """處理用戶輸入的完整流程 - 包含難度參數"""
+    def process_user_input(self, audio_path, scenario, conversation_context="", difficulty="中級 (TOEIC 605-780分)", 
+                          pronunciation_focus=None, accent_preference="不指定", feedback_detail="詳細回饋", 
+                          show_comparison=True, **kwargs):
+        """處理用戶輸入的完整流程 - 整合所有進階功能"""
         result = {
             "recognized_text": "",
             "pronunciation_analysis": "",
             "response_text": "",
+            "suggested_responses": [],
             "pronunciation_score": 0,
             "fluency_score": 0,
             "success": False,
@@ -505,7 +688,16 @@ class ConversationManager:
             result["recognized_text"] = recognized_text
             
             analysis_result = self.audio_processor.analyze_pronunciation(
-                audio_path, recognized_text, scenario, conversation_context, difficulty
+                audio_path=audio_path,
+                transcribed_text=recognized_text, 
+                scenario=scenario, 
+                conversation_history=conversation_context,
+                difficulty=difficulty,
+                pronunciation_focus=pronunciation_focus,
+                accent_preference=accent_preference,
+                feedback_detail=feedback_detail,
+                show_comparison=show_comparison,
+                **kwargs
             )
             
             result.update(analysis_result)
@@ -564,10 +756,19 @@ if __name__ == "__main__":
     manager = ConversationManager()
     print("ConversationManager初始化完成")
     
+    test_focus = ["子音發音", "語調"]
+    test_accent = "美式英文"
+    test_feedback = "專家級分析"
+    
     for difficulty in DIFFICULTY_CONFIGS:
         print(f"難度: {difficulty}")
-        prompt = get_scenario_prompt("機場對話 (Airport Conversation)", difficulty)
+        prompt = create_advanced_prompt(
+            "機場對話 (Airport Conversation)", 
+            difficulty, 
+            test_focus, 
+            test_accent, 
+            test_feedback, 
+            True
+        )
         print(f"Prompt長度: {len(prompt)} 字符")
-        responses = get_scenario_responses("機場對話 (Airport Conversation)", difficulty)
-        print(f"回應數量: {len(responses)}")
         print("---")
