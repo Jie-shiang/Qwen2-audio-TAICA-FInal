@@ -7,10 +7,11 @@
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org)
 [![Gradio](https://img.shields.io/badge/Gradio-4.0+-orange.svg)](https://gradio.app)
-[![License](https://img.shields.io/badge/License-Academic-green.svg)](LICENSE)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1lOXTTMYY521QtAjKdNYNB6YN6sXxkug0?usp=sharing)
 
 ## 📋 目錄
 
+- [🫠 作者前言](#-作者前言)
 - [✨ 專案亮點](#-專案亮點)
 - [🎯 功能特色](#-功能特色)
 - [🏗️ 系統架構](#️-系統架構)
@@ -19,7 +20,12 @@
 - [💻 系統需求](#-系統需求)
 - [🔧 模組詳解](#-模組詳解)
 - [📱 使用指南](#-使用指南)
-- [📞 聯絡資訊](#-聯絡資訊)
+
+## 🫠 作者前言
+
+本Github是TAICA生成式AI：文字與圖像生成的原理與實務課程的Final_Project紀錄，來自台灣的大學聯合課程，本來只是想簡單存放project會用到的code以及資料，沒想到AI工具的功能這麼強大，幫我生成了看起來很不錯的README.md，所以才會有以下的內容，大致上會用到功能介紹跟安裝都有涵蓋進去，但要注意的是免費Colab確定跑不動Qwen2-audio-7B，所以需要自己準備環境來跑。這次實作了一個口說練習的平台，可以自己上傳錄音跟分看分析，最近不是流行讓AI分析你的臉的pr值嗎?這個就是類似的概念，透過audio-llm來分析跟學習怎麼做口說練習，這次學到很多東西，祝任何有看到這個Project的人，不論學業還是工作都順利。
+
+This Github is the Final_Project record of TAICA Generative AI: Principles and Practices of Text and Image Generation, a joint course from universities in Taiwan. I originally just wanted to simply store the code and data used in the project. I didn’t expect the AI ​​tool to be so powerful. It helped me generate a README.md that looks very good, so there is the following content. The general function introduction and installation are covered, but it should be noted that the free Colab cannot run Qwen2-audio-7B, so you need to prepare your own environment to run it. This time, I implemented a platform for oral practice. You can upload your own recordings and analyze them. Isn't it popular to let AI analyze the PR value of your face recently? This is a similar concept. Through audio-llm, you can analyze and learn how to practice oral practice. I learned a lot this time. I wish anyone who sees this project good luck in their studies or work.
 
 ## ✨ 專案亮點
 
@@ -442,29 +448,4 @@ intonation_focus = [
 - **弱項分析**: AI識別需要加強的發音要點
 - **目標設定**: 根據TOEIC級別設定學習目標
 
-## 📞 聯絡資訊
-
-### 👨‍🎓 專案作者
-- **姓名**: 楊傑翔
-- **學號**: 113061529  
-- **系所**: 清華大學電機工程學系碩士班
-- **學年**: 113學年度
-
-### 📧 聯絡方式
-- **學校信箱**: [snoopy963852@gapp.nthu.edu.tw](mailto:snoopy963852@gapp.nthu.edu.tw)
-
 ---
-
-<div align="center">
-
-### 🎉 感謝你看到這邊
-
-**我很佩服目前AI工具的能力** 🚀
-
-[![清華大學](https://img.shields.io/badge/清華大學-電機工程學系-purple.svg)](https://web.ee.nthu.edu.tw/)
-[![Python](https://img.shields.io/badge/Made%20with-Python-blue.svg)](https://python.org)
-[![AI](https://img.shields.io/badge/Powered%20by-AI-green.svg)](https://openai.com)
-
-**Happy Learning! 📚✨**
-
-</div>
