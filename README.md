@@ -1,451 +1,113 @@
-# 🗣️ 口說語言學習互動助教系統
+# Oral Language Learning Interactive Assistant System
 
-**清華大學電機所 113061529 楊傑翔 Final Project**
+**National Tsing Hua University EE Final Project - 113061529 Jie-Xiang Yang**
 
-> 基於 Whisper + Qwen2-Audio 的多模態語言學習平台，提供個性化發音評估與即時對話練習
+> A multimodal language learning platform based on Whisper and Qwen2-Audio, providing personalized pronunciation evaluation and real-time dialogue practice.
 
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org)
 [![Gradio](https://img.shields.io/badge/Gradio-4.0+-orange.svg)](https://gradio.app)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1lOXTTMYY521QtAjKdNYNB6YN6sXxkug0?usp=sharing)
 
-## 📋 目錄
+## Table of Contents
 
-- [🫠 作者前言](#-作者前言)
-- [✨ 專案亮點](#-專案亮點)
-- [🎯 功能特色](#-功能特色)
-- [🏗️ 系統架構](#️-系統架構)
-- [📁 專案結構](#-專案結構)
-- [🚀 快速開始](#-快速開始)
-- [💻 系統需求](#-系統需求)
-- [🔧 模組詳解](#-模組詳解)
-- [📱 使用指南](#-使用指南)
+- [Author's Foreword](#authors-foreword)
+- [Project Highlights](#project-highlights)
+- [Core Features](#core-features)
+- [System Architecture](#system-architecture)
+- [Project Structure](#project-structure)
+- [Quick Start](#quick-start)
+- [System Requirements](#system-requirements)
+- [Module Overview](#module-overview)
+- [User Guide](#user-guide)
 
-## 🫠 作者前言
+## Author's Foreword
 
-本Github是TAICA生成式AI：文字與圖像生成的原理與實務課程的Final_Project紀錄，來自台灣的大學聯合課程，本來只是想簡單存放project會用到的code以及資料，沒想到AI工具的功能這麼強大，幫我生成了看起來很不錯的README.md，所以才會有以下的內容，大致上會用到功能介紹跟安裝都有涵蓋進去，但要注意的是免費Colab確定跑不動Qwen2-audio-7B，所以需要自己準備環境來跑。這次實作了一個口說練習的平台，可以自己上傳錄音跟分看分析，最近不是流行讓AI分析你的臉的pr值嗎?這個就是類似的概念，透過audio-llm來分析跟學習怎麼做口說練習，這次學到很多東西，祝任何有看到這個Project的人，不論學業還是工作都順利。
+This repository contains the final project for the *TAICA Generative AI: Principles and Practices of Text and Image Generation* joint university course. The project implements an oral language practice platform that utilizes Audio-LLMs to analyze user recordings, evaluate pronunciation, and facilitate dialogue practice. 
 
-This Github is the Final_Project record of TAICA Generative AI: Principles and Practices of Text and Image Generation, a joint course from universities in Taiwan. I originally just wanted to simply store the code and data used in the project. I didn’t expect the AI ​​tool to be so powerful. It helped me generate a README.md that looks very good, so there is the following content. The general function introduction and installation are covered, but it should be noted that the free Colab cannot run Qwen2-audio-7B, so you need to prepare your own environment to run it. This time, I implemented a platform for oral practice. You can upload your own recordings and analyze them. Isn't it popular to let AI analyze the PR value of your face recently? This is a similar concept. Through audio-llm, you can analyze and learn how to practice oral practice. I learned a lot this time. I wish anyone who sees this project good luck in their studies or work.
+Please note that the Qwen2-Audio-7B model requires dedicated hardware and cannot be run on the free tier of Google Colab. A local environment with sufficient GPU resources is necessary for full functionality. 
 
-## ✨ 專案亮點
+## Project Highlights
 
-### 🧠 多模態AI架構
-- **Whisper語音識別**: OpenAI頂級語音轉文字模型
-- **Qwen2-Audio分析**: 阿里巴巴多模態語言模型，直接音頻理解
-- **降級機制**: GPU記憶體不足時自動切換到CPU簡化模式
+### Multimodal AI Architecture
+- **Whisper Speech Recognition:** OpenAI's state-of-the-art speech-to-text model.
+- **Qwen2-Audio Analysis:** Alibaba's multimodal language model for direct audio comprehension.
+- **Hardware Fallback Mechanism:** Automatically switches to a CPU-based simplified mode when GPU memory is insufficient.
 
-### 🎯 個性化學習體驗
-- **5級難度系統**: 從初學者(TOEIC 250)到高級(TOEIC 905+)
-- **6大場景模擬**: 機場、餐廳、面試、社交、醫療、學術
-- **即時發音評分**: 綜合發音準確度與流暢度評估
-- **即時回饋調整**: 基於學習者水平的個性化建議
+### Personalized Learning Experience
+- **5-Tier Difficulty System:** Ranges from Beginner (TOEIC 250) to Advanced (TOEIC 905+).
+- **6 Scenario Simulations:** Airport, Restaurant, Interview, Socializing, Medical, and Academic.
+- **Real-time Assessment:** Comprehensive evaluation of pronunciation accuracy and fluency.
+- **Adaptive Feedback:** Personalized suggestions based on the learner's proficiency level.
 
-### ⚡ 資源管理
-- **動態記憶體監控**: 實時GPU/CPU使用量追蹤
-- **自適應模型載入**: 根據硬體配置自動優化
-- **緊急清理機制**: 防止記憶體溢出的保護措施
+### Resource Management
+- **Dynamic Memory Monitoring:** Real-time GPU/CPU usage tracking.
+- **Adaptive Model Loading:** Optimizes based on available hardware specifications.
+- **Emergency Clearing Mechanism:** Built-in safeguards to prevent out-of-memory (OOM) errors.
 
-### 🎨 現代化UI設計
-- **響應式界面**: 支援桌面端與行動裝置
-- **毛玻璃效果**: 現代化視覺設計
-- **無障礙支持**: 友善的用戶體驗設計
+### Modern UI Design
+- **Responsive Interface:** Optimized for both desktop and mobile devices.
+- **Glassmorphism Design:** Clean, modern visual aesthetics.
+- **Accessibility:** Designed for an intuitive user experience.
 
-## 🎯 功能特色
+## Core Features
 
-### 📚 雙模式學習系統
+### Dual-Mode Learning System
 
-#### 🎭 預設場景對話
-```
-✈️ 機場對話    - 通關、登機、護照檢查情境
-🍽️ 餐廳點餐    - 點餐、詢問菜單、結帳對話  
-💼 求職面試    - 工作面試問答與自我介紹
-🤝 日常社交    - 問候、閒聊、社交互動
-🏥 醫療諮詢    - 病情描述、醫療對話練習
-📚 學術討論    - 課堂發言、研討會互動
-```
+**Preset Scenario Dialogues**
+- Airport: Customs, boarding, passport control.
+- Restaurant: Menu inquiries, ordering, checkout.
+- Job Interview: Q&A and self-introductions.
+- Daily Socializing: Greetings, small talk, interactions.
+- Medical Consultation: Symptom description, medical communication.
+- Academic Discussion: Classroom participation, seminar interactions.
 
-#### 💭 自由對話模式
-- 用戶自定義場景和話題
-- 開放式對話練習
-- 靈活的學習內容
+**Free Conversation Mode**
+- User-defined scenarios and topics for open-ended practice.
 
-### 🎧 多層次語音分析
+### Multi-level Speech Analysis
 
-#### 🔍 基礎分析 (簡化模式)
-- 語音識別準確度評估
-- 基本發音評分算法
-- 流暢度統計分析
+**Basic Analysis (Simplified Mode)**
+- Speech recognition accuracy evaluation.
+- Fundamental pronunciation scoring algorithm.
+- Fluency statistical analysis.
 
-#### 🧠 進階分析 (Audio-LLM模式)
-- 直接音頻內容理解
-- 上下文相關的回饋
-- 細緻的發音糾正建議
+**Advanced Analysis (Audio-LLM Mode)**
+- Direct audio content comprehension.
+- Context-aware feedback.
+- Detailed pronunciation correction suggestions.
 
-### 📊 個性化難度系統
+### Personalized Difficulty System
 
-| 難度級別 | TOEIC分數 | 評估標準 | 回饋特色 |
-|---------|----------|----------|---------|
-| 初學者 | 250-400 | 基礎發音清晰度 | 極度鼓勵性 (+15分調整) |
-| 初級 | 405-600 | 基本對話流暢性 | 鼓勵性 (+10分調整) |
-| 中級 | 605-780 | 語法準確度與自然度 | 平衡性 (標準評分) |
-| 中高級 | 785-900 | 慣用語與細緻發音 | 建設性 (-5分調整) |
-| 高級 | 905+ | 專業級流暢度 | 詳細分析 (-10分調整) |
+| Level | TOEIC Score | Evaluation Criteria | Feedback Style |
+|---|---|---|---|
+| Beginner | 250-400 | Basic pronunciation clarity | Highly encouraging (+15 score adjustment) |
+| Elementary | 405-600 | Basic conversational fluency | Encouraging (+10 score adjustment) |
+| Intermediate | 605-780 | Grammatical accuracy and naturalness | Balanced (Standard scoring) |
+| Upper-Intermediate | 785-900 | Idiom usage and detailed pronunciation | Constructive (-5 score adjustment) |
+| Advanced | 905+ | Professional-level fluency | Detailed analysis (-10 score adjustment) |
 
-### 🔧 進階功能設定
+### Advanced Settings
 
-#### 🎯 發音重點關注
-- **子音發音**: 清晰度與準確性
-- **母音發音**: 音位準確度
-- **連音技巧**: 自然語流處理
-- **重音模式**: 單字與句子重音
-- **語調變化**: 升降調與情感表達
-- **節奏控制**: 語速與停頓
+- **Pronunciation Focus:** Target specific consonants, vowels, liaisons, stress patterns, intonation, and rhythm.
+- **Accent Preferences:** Choose between General American, Received Pronunciation (British), or a flexible mode.
+- **Learning Tracking:** Auto-saves practice history, analyzes improvement trends, and supports data export.
 
-#### 🌍 口音偏好設定
-- **美式英文**: General American發音標準
-- **英式英文**: Received Pronunciation標準
-- **彈性模式**: 不指定特定口音
-
-#### 📈 學習追蹤功能
-- **進度記錄**: 自動保存練習歷程
-- **統計分析**: 發音改善趨勢圖表
-- **歷史對比**: 與標準發音比較
-- **匯出功能**: 學習記錄匯出
-
-## 🏗️ 系統架構
+## System Architecture
 
 ```mermaid
 graph TB
-    A[用戶語音輸入] --> B[Whisper語音識別]
-    B --> C{記憶體檢查}
-    C -->|足夠| D[Qwen2-Audio分析]
-    C -->|不足| E[簡化分析模式]
-    D --> F[詳細發音回饋]
-    E --> G[基礎發音評分]
-    F --> H[個性化回應生成]
+    A[User Audio Input] --> B[Whisper Speech Recognition]
+    B --> C{Memory Check}
+    C -->|Sufficient| D[Qwen2-Audio Analysis]
+    C -->|Insufficient| E[Simplified Analysis Mode]
+    D --> F[Detailed Pronunciation Feedback]
+    E --> G[Basic Pronunciation Scoring]
+    F --> H[Personalized Response Generation]
     G --> H
-    H --> I[用戶界面展示]
+    H --> I[User Interface Display]
     
-    J[記憶體監控器] --> C
-    K[難度配置系統] --> F
+    J[Memory Monitor] --> C
+    K[Difficulty Config System] --> F
     K --> G
-    L[場景管理器] --> H
-```
-
-### 🔄 降級機制
-
-```python
-# 自動模型選擇流程
-if GPU_memory > 10GB:
-    load_qwen2_audio_model(dtype=float16)
-elif GPU_memory > 6GB:
-    load_qwen2_audio_model(dtype=float16, quantized=True)
-else:
-    use_simplified_analysis_mode()
-```
-
-## 📁 專案結構
-
-```
-Qwen2-audio-TAICA-Final/
-├── 📄 app.py                         # 主應用程式與Gradio界面
-├── 🧠 models.py                      # AI模型管理與GPU優化
-├── ⚙️ processors.py                  # 音頻處理與語言分析核心
-├── 📊 memory_monitor.py              # 智能記憶體監控系統
-├── 🎨 styles.css                     # 現代化UI樣式設計
-├── 📋 requirements.txt               # Python依賴套件清單
-├── 📚 README.md                      # 專案說明文檔
-├── 📝 final_project_report.md        # 期末專題報告
-├── 📁 figure/                        # 報告用圖片資源
-│   ├── advanced_settings.png        # 進階設定界面
-│   ├── conversation_practice.png    # 對話練習界面
-│   ├── free_dialog.png              # 自由對話界面
-│   ├── main_interface.png           # 系統主界面
-│   ├── pronunciation_analysis.png   # 發音分析結果
-│   ├── scenario_selection.png       # 場景選擇界面
-│   ├── Structure.png                # 系統架構圖
-│   └── system_monitoring.png        # 系統監控界面
-└── 📁 scenario_images/               # 場景配圖資源
-├── academic.jpg                  # 學術場景圖
-├── airport.jpg                   # 機場場景圖
-├── background.jpg                # 背景圖片
-├── interview.jpg                 # 面試場景圖
-├── medical.jpg                   # 醫療場景圖
-├── restaurant.jpg                # 餐廳場景圖
-└── socializing.jpg               # 社交場景圖
-```
-
-### 📂 核心模組職責
-
-| 模組 | 主要功能 | 技術特色 |
-|------|----------|----------|
-| `models.py` | AI模型管理 | GPU自動檢測、記憶體優化、降級機制 |
-| `processors.py` | 語音處理分析 | 多層次分析、難度調整、場景適配 |
-| `app.py` | 用戶界面邏輯 | 響應式設計、事件處理、狀態管理 |
-| `memory_monitor.py` | 系統監控 | 實時監控、自動清理、緊急保護 |
-| `styles.css` | 視覺設計 | 毛玻璃效果、響應式布局、無障礙支持 |
-
-## 🚀 快速開始
-
-### 1️⃣ 環境設置
-
-```bash
-# 克隆專案
-git clone <your-repo-url>
-cd Qwen2-audio-TAICA-Final
-
-# 創建虛擬環境
-conda create --name language_assistant python=3.10
-conda activate language_assistant
-
-# 安裝PyTorch (CUDA版本)
-conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
-
-# 安裝其他依賴
-pip install -r requirements.txt
-```
-
-### 2️⃣ 模型準備
-
-```bash
-# 自動下載模型 (首次運行時)
-python models.py
-
-# 或手動下載 (可選)
-huggingface-cli download openai/whisper-medium
-huggingface-cli download Qwen/Qwen2-Audio-7B-Instruct
-```
-
-### 3️⃣ 啟動應用
-
-```bash
-# 基本啟動
-python app.py
-
-# 指定GPU記憶體限制 (預設20GB)
-GPU_MEMORY_LIMIT=16 python app.py
-
-# CPU模式 (無GPU時)
-CUDA_VISIBLE_DEVICES="" python app.py
-```
-
-### 4️⃣ 訪問界面
-
-- **本地訪問**: http://localhost:7861
-- **網路分享**: 啟動時會自動生成 Gradio 分享連結
-- **支援設備**: 桌面瀏覽器、平板、手機
-
-## 💻 系統需求
-
-### 🟢 最低配置
-
-| 組件 | 需求 | 說明 |
-|------|------|------|
-| **Python** | 3.10+ | 支援最新語言特性 |
-| **記憶體** | 8GB RAM | 基本模型載入需求 |
-| **儲存空間** | 15GB 可用空間 | 模型檔案約10GB |
-| **網路** | 寬頻連線 | 首次下載模型需要 |
-| **音頻設備** | 麥克風 | 錄音功能必需 |
-
-### ⭐ 建議配置
-
-| 組件 | 建議規格 | 性能提升 |
-|------|----------|----------|
-| **GPU** | RTX 4070 / RTX 3080 (8GB+ VRAM) | 10-20x 加速 |
-| **記憶體** | 16GB+ RAM | 更好的多工處理 |
-| **CPU** | 8核心+ 現代處理器 | CPU降級模式性能 |
-| **儲存** | SSD 固態硬碟 | 更快的模型載入 |
-| **音頻** | 高品質USB麥克風 | 更好的語音識別 |
-
-### 🔧 GPU支援情況
-
-| GPU型號 | VRAM | Audio-LLM支援 | 推薦設定 |
-|---------|------|---------------|----------|
-| RTX 4090 | 24GB | ✅ 完全支援 | float16, 全功能 |
-| RTX 4080 | 16GB | ✅ 完全支援 | float16, 全功能 |
-| RTX 4070 | 12GB | ✅ 完全支援 | float16, 建議限制18GB |
-| RTX 3080 | 10GB | ⚠️ 部分支援 | float16, 量化模式 |
-| RTX 3070 | 8GB | ⚠️ 基礎支援 | 簡化模式 |
-| GTX 1660 | 6GB | ❌ CPU降級 | Whisper only |
-
-## 🔧 模組詳解
-
-### 🧠 models.py - AI模型管理中心
-
-```python
-class ModelManager:
-    """
-    統一管理所有AI模型，包含：
-    - GPU/CPU自動檢測與配置
-    - Whisper語音識別模型載入
-    - Qwen2-Audio多模態模型管理
-    - 記憶體優化與監控
-    """
-```
-
-#### 核心特性
-- **自適應硬體檢測**: 自動識別最佳GPU配置
-- **記憶體安全機制**: 防止OOM錯誤的多層保護
-- **模型熱切換**: 運行時動態調整模型精度
-- **資源清理**: 垃圾回收與記憶體釋放
-
-### ⚙️ processors.py - 語音處理與分析核心
-
-```python
-class AudioProcessor:
-    """
-    處理語音分析的核心邏輯：
-    - 多層次語音識別與理解
-    - 基於難度的評分調整算法
-    - 個性化回饋內容生成
-    - 上下文感知的對話管理
-    """
-```
-
-#### 分析層次架構
-
-1. **語音識別層** (Whisper)
-   - 高精度語音轉文字
-   - 多語言支援能力
-   - 雜音環境適應
-
-2. **語義理解層** (Qwen2-Audio)  
-   - 直接音頻內容分析
-   - 語調情感識別
-   - 發音細節評估
-
-3. **評分調整層** (Difficulty-Aware)
-   - 基於TOEIC級別的動態評分
-   - 學習者進度追蹤
-   - 個性化建議生成
-
-### 📊 memory_monitor.py - 資源監控
-
-```python
-class MemoryMonitor:
-    """
-    實時系統資源監控：
-    - GPU記憶體使用追蹤
-    - CPU資源監控
-    - 自動緊急清理機制
-    - 進程保護與恢復
-    """
-```
-
-#### 保護機制層級
-
-1. **預警階段** (80% 使用率)
-   - 記憶體使用警告
-   - 自動垃圾回收
-   - 模型精度調整
-
-2. **保護階段** (90% 使用率)
-   - 緊急記憶體清理
-   - 模型卸載重載
-   - 功能降級處理
-
-3. **緊急階段** (95%+ 使用率)
-   - 強制程序終止
-   - 數據自動保存
-   - 系統狀態記錄
-
-### 🎨 styles.css - 現代化UI設計系統
-
-#### 設計語言特色
-
-- **毛玻璃擬態設計**: `backdrop-filter: blur()` 現代視覺效果
-- **漸層配色方案**: 豐富的顏色層次與品牌一致性
-- **響應式布局**: 跨設備完美適配
-- **無障礙支持**: WCAG 2.1 標準遵循
-
-```css
-/* 核心設計系統 */
-.main-container {
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(15px);
-    border: 2px solid rgba(102, 126, 234, 0.15);
-    border-radius: 20px;
-    box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8);
-}
-```
-
-## 📱 使用指南
-
-### 🎯 預設場景模式操作流程
-
-#### 1. 系統設定
-```
-1️⃣ 選擇學習語言 (目前支援英文)
-2️⃣ 設定難度級別 (TOEIC 250-905+)  
-3️⃣ 確認設定並選擇模式
-```
-
-#### 2. 場景選擇
-```
-✈️ 機場對話 - 護照檢查、登機程序
-🍽️ 餐廳點餐 - 菜單詢問、點餐結帳  
-💼 求職面試 - 自我介紹、問答互動
-🤝 日常社交 - 問候閒聊、社交對話
-🏥 醫療諮詢 - 症狀描述、醫療溝通
-📚 學術討論 - 課堂發言、學術交流
-```
-
-#### 3. 對話練習
-```
-🎤 點擊麥克風圖標開始錄音
-🔴 說出您的回應 (建議5-15秒)
-⏹️ 停止錄音並等待分析
-📊 查看詳細發音評估與建議
-🔄 根據建議進行改進練習
-```
-
-### 💭 自由對話模式
-
-#### 自定義場景示例
-
-```markdown
-# 商務會議場景
-"我想練習在國際商務會議中發言，
-包括提出建議、表達意見和詢問問題的對話。"
-
-# 旅遊諮詢場景  
-"模擬在旅遊服務中心詢問景點資訊、
-交通方式和住宿建議的對話。"
-
-# 學術研討場景
-"練習在學術研討會中提問、
-回應他人觀點並進行專業討論。"
-```
-
-### 🔧 進階功能使用
-
-#### 發音重點關注設定
-
-```python
-# 子音發音重點
-focus_areas = [
-    "th音 (think, that)",
-    "r/l區別 (right, light)", 
-    "v/w區別 (very, worry)",
-    "清濁音對比 (pat, bat)"
-]
-
-# 語調練習重點
-intonation_focus = [
-    "疑問句上升調",
-    "陳述句下降調", 
-    "強調語調變化",
-    "情感表達語調"
-]
-```
-
-#### 學習追蹤功能
-
-- **練習歷程**: 自動記錄每次練習的時間、場景、得分
-- **進步趨勢**: 圖表化顯示發音改善軌跡  
-- **弱項分析**: AI識別需要加強的發音要點
-- **目標設定**: 根據TOEIC級別設定學習目標
-
----
+    L[Scenario Manager] --> H
